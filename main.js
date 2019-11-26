@@ -3,39 +3,69 @@ const WebTorrent = require('webtorrent-hybrid');
 
 var client = new WebTorrent()
 
-var magnetURI = process.argv[2];
+if (process.argv[2]) {
 
-client.add(magnetURI, function (torrent) {
-  // create HTTP server for this torrent
-  var server = torrent.createServer();
-  server.listen(8000); // start the server listening to a port
+  if (process.argv[2].startsWith("magnet:")) {
 
-  var interval = setInterval(function () {
-    console.clear();
-    console.log("Downloading: " + (torrent.progress * 100).toFixed(1) + "%" 
-        + " - " + (torrent.downloadSpeed / Math.pow(10,6)).toFixed(2)  + " mb/s "
-        + " from " + torrent.numPeers + " peer(s)"
-        + " Time left: " + (torrent.timeRemaining/60000).toFixed(2) + " minutes");
+    var magnetURI = process.argv[2]
 
-  }, 1000);
+    client.add(magnetURI, function (torrent) {
+      // create HTTP server for this torrent
+      var server = torrent.createServer();
+      server.listen(8000); // start the server listening to a port
+    
+      var interval = setInterval(function () {
+        console.clear();
+        console.log("Downloading: " + (torrent.progress * 100).toFixed(1) + "%" 
+            + " - " + (torrent.downloadSpeed / Math.pow(10,6)).toFixed(2)  + " mb/s "
+            + " from " + torrent.numPeers + " peer(s)"
+            + " Time left: " + (torrent.timeRemaining/60000).toFixed(2) + " minutes");
+    
+      }, 1000);
+    
+      torrent.on("done", function () {
+          console.log("File ready.");
+          clearInterval(interval);
+      });
+    
+      torrent.on('error', function (err) {
+          console.log(err);
+      });
+    
+      // visit http://localhost:<port>/ to see a list of files
+    
+      // access individual files at http://localhost:<port>/<index> where index is the index
+      // in the torrent.files array
+    
+      startMpvPlayer("http://localhost:8000/0");
+       
+      // later, cleanup...
+    
+    
+      //server.close();
+      //client.destroy();
+    
+    });
 
-  torrent.on("done", function () {
-      console.log("File ready.");
-      clearInterval(interval);
-  });
+  } else {
 
-  torrent.on('error', function (err) {
-      console.log(err);
-  });
+    // not a magnet link url
+    startMpvPlayer(process.argv[2]);
+  }
 
-  // visit http://localhost:<port>/ to see a list of files
+} else {
+  console.log("No source provided, quitting");
+  process.exit();
+}
 
-  // access individual files at http://localhost:<port>/<index> where index is the index
-  // in the torrent.files array
+
+function startMpvPlayer(url) {
 
   const mpvAPI = require('node-mpv');
 
   const mpvPlayer = new mpvAPI();
+
+  console.log("Starting video player with source url: " + url)
 
   var firstStart = true;
   mpvPlayer.on('started', function(status) {
@@ -66,18 +96,10 @@ client.add(magnetURI, function (torrent) {
   
   });
 
-  mpvPlayer.load("http://localhost:8000/0");
+  mpvPlayer.load(url);
   //mpvPlayer.load("https://www.youtube.com/watch?v=KBRU2VkUeh4");
 
   
 
   //mpv.volume(70);
-   
-  // later, cleanup...
-
-
-  //server.close();
-  //client.destroy();
-
-});
-
+}
