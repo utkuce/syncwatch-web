@@ -3,7 +3,7 @@ const WebTorrent = require('webtorrent-hybrid');
 
 var client = new WebTorrent()
 
-var magnetURI = 'magnet:?xt=...'
+var magnetURI = process.argv[2];
 
 client.add(magnetURI, function (torrent) {
   // create HTTP server for this torrent
@@ -33,8 +33,51 @@ client.add(magnetURI, function (torrent) {
   // access individual files at http://localhost:<port>/<index> where index is the index
   // in the torrent.files array
 
+  const mpvAPI = require('node-mpv');
+
+  const mpvPlayer = new mpvAPI();
+
+  var firstStart = true;
+  mpvPlayer.on('started', function(status) {
+
+    if (firstStart) {
+
+      mpvPlayer.goToPosition(0.1);
+      mpvPlayer.pause();
+
+      firstStart = false;
+    }
+
+  });
+
+  mpvPlayer.on('statuschange', function(status){
+    //console.log(status);
+  });
+
+  mpvPlayer.on('paused', function(status) {
+  
+  });
+
+  mpvPlayer.on('resumed', function(status) {
+  
+  });
+
+  mpvPlayer.on('seek', function(status) {
+  
+  });
+
+  mpvPlayer.load("http://localhost:8000/0");
+  //mpvPlayer.load("https://www.youtube.com/watch?v=KBRU2VkUeh4");
+
+  
+
+  //mpv.volume(70);
+   
   // later, cleanup...
-  //server.close()
-  //client.destroy()
+
+
+  //server.close();
+  //client.destroy();
+
 });
 

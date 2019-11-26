@@ -1,0 +1,13 @@
+{
+    "name": "syncwatch",
+    "author": "Utku Çelik",
+    "bin": "main.js",
+    "assets": [
+        "mpv.exe",
+        "youtube-dl.exe"
+    ],
+    "dependencies": {
+        "node-mpv": "^1.4.3",
+        "webtorrent-hybrid": "^4.0.1"
+    }
+}
