@@ -5,9 +5,15 @@ var client = new WebTorrent()
 
 if (process.argv[2]) {
 
-  if (process.argv[2].startsWith("magnet:")) {
+  if (process.argv[2].startsWith("syncwatch:")) {
+    inputURL = process.argv[2].substring("syncwatch:".length);
+  } else {
+    inputURL = process.argv[2];
+  }
 
-    var magnetURI = process.argv[2]
+  if (inputURL.startsWith("magnet:")) {
+
+    var magnetURI = inputURL;
 
     client.add(magnetURI, function (torrent) {
       // create HTTP server for this torrent
@@ -50,7 +56,7 @@ if (process.argv[2]) {
   } else {
 
     // not a magnet link url
-    startMpvPlayer(process.argv[2]);
+    startMpvPlayer(inputURL);
   }
 
 } else {
@@ -63,7 +69,8 @@ function startMpvPlayer(url) {
 
   const mpvAPI = require('node-mpv');
 
-  const mpvPlayer = new mpvAPI();
+  // TODO: fix absolute path
+  const mpvPlayer = new mpvAPI({"binary" : "C:/Users/utku/Dropbox/workspace/syncwatch-desktop/mpv.exe"});
 
   console.log("Starting video player with source url: " + url)
 
