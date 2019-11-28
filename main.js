@@ -70,9 +70,10 @@ function startMpvPlayer(url) {
   const mpvAPI = require('node-mpv');
 
   // TODO: fix absolute path
-  const mpvPlayer = new mpvAPI({"binary" : "C:/Users/utku/Dropbox/workspace/syncwatch-desktop/mpv.exe"});
+  const mpvPlayer = new mpvAPI();
 
-  console.log("Starting video player with source url: " + url)
+  console.log("Starting video player with source url: " + url);
+  console.log("Please wait...");
 
   var firstStart = true;
   mpvPlayer.on('started', function(status) {
@@ -92,15 +93,15 @@ function startMpvPlayer(url) {
   });
 
   mpvPlayer.on('paused', function(status) {
-  
+    console.log("video paused");
   });
 
   mpvPlayer.on('resumed', function(status) {
-  
+    console.log("video resumed");
   });
 
-  mpvPlayer.on('seek', function(status) {
-  
+  mpvPlayer.on('seek', function(timeposition) {
+    console.log("video position changed " + timeposition.end);
   });
 
   mpvPlayer.load(url);

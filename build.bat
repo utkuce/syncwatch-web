@@ -1,1 +1,1 @@
-nexe main.js --resource "mpv.exe" --resource "youtube-dl.exe" --name "syncwatch"
+nexe main.js --name "syncwatch"
