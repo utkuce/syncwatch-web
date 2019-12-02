@@ -1,9 +1,10 @@
 {
     "name": "syncwatch",
     "author": "Utku Çelik",
-    "bin": "main.js",
+    "bin": "index.js",
     "dependencies": {
         "node-mpv": "^1.4.3",
+        "peerjs": "^1.1.0",
         "webtorrent-hybrid": "^4.0.1"
     }
 }

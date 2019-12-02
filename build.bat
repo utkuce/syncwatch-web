@@ -1,1 +1,1 @@
-nexe main.js --name "syncwatch"
+nexe index.js --name "syncwatch"
