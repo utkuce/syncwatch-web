@@ -4,7 +4,7 @@
     "bin": "index.js",
     "dependencies": {
         "node-mpv": "^1.4.3",
-        "peerjs": "^1.1.0",
+        "simple-peer": "^9.6.2",
         "webtorrent-hybrid": "^4.0.1"
     }
 }
