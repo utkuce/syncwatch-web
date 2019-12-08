@@ -4,28 +4,21 @@ var torrentHandler = require('./torrenthandler.js');
 var videoPlayer = require('./videoplayer.js');
 var peers = require("./peers");
 
+// if started with a join link join a room
 if (process.argv[2]) {
 
   if (process.argv[2].startsWith("syncwatch://")) {
-    inputURL = process.argv[2].substring("syncwatch://".length);
-  }else if (process.argv[2].startsWith("syncwatch:")) {
-    inputURL = process.argv[2].substring("syncwatch:".length);
-  } else {
-    inputURL = process.argv[2];
+    
+    roomId = process.argv[2].substring("syncwatch://".length);
+    peers.join(roomId);
+
   }
 
-  if (inputURL.startsWith("magnet:")) {
+} else { // else create your own room
 
-    torrentHandler.start(inputURL);
+  peers.createRoom();
 
-  } else {
-
-    // not a magnet link url
-    videoPlayer.start(inputURL);
-  }
-
-} else {
-
+  // get video source from standard input
   console.log("Paste a direct link to a video or a magnet link:");
   var readline = require('readline');
   var rl = readline.createInterface({
@@ -35,7 +28,13 @@ if (process.argv[2]) {
   });
 
   rl.on('line', function(line){
+
+    if (line.startsWith("magnet:")) {
+      torrentHandler.start(line);
+    } else {
       videoPlayer.start(line);
+    }
+
   });
   
   //process.exit();
