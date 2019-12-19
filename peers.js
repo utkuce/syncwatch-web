@@ -20,7 +20,6 @@ var SimplePeer = require('simple-peer');
 var wrtc = require('wrtc');
 
 var remotePeer; // TODO: make it an array for one to many connection
-var index = 0;
 
 var uniqid = require('uniqid');
 const myPeerId = uniqid('peer-');
@@ -30,7 +29,17 @@ exports.createRoom = function() {
 
     const roomId = uniqid('room-');
 
-    remotePeer = new SimplePeer({ initiator: true, trickle:false ,  wrtc: wrtc });
+    remotePeer = new SimplePeer(
+        { initiator: true, 
+            trickle:false ,  
+            wrtc: wrtc,
+            config: { 
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' }, 
+                    { urls: 'stun:global.stun.twilio.com:3478?transport=tcp' }
+                ] 
+            }
+        });
 
     console.log("Creating room");
     console.log("Join link: " + "syncwatch://" + roomId);
@@ -46,15 +55,24 @@ exports.createRoom = function() {
     });
     
     remotePeer.on('connect', () => {
+
+        remotePeer.send(JSON.stringify({'info': 'Connection established'}));
+        
         // wait for 'connect' event before using the data channel
-        console.log("Connected to peer, sending data");
-        remotePeer.send('hey, how is it going?');
+        console.log("Connected to peer");
+        //remotePeer.send('hey, how is it going?');
+    });
+
+    remotePeer.on('data', data => {
+        // got a data channel message
+        console.log('got a message: ' + data);
+        handleReceived(data);
     });
 }
 
 exports.join = function(roomId) {
 
-    remotePeer = new SimplePeer({ wrtc: wrtc });
+    remotePeer = new SimplePeer({ wrtc: wrtc , trickle: false});
 
     console.log("Joining room: " + roomId);
     console.log("Reading signal data of peers in the room");
@@ -71,6 +89,7 @@ exports.join = function(roomId) {
     remotePeer.on('data', data => {
         // got a data channel message
         console.log('got a message: ' + data);
+        handleReceived(data);
     });
 
     // Read initiator's signal data
@@ -101,4 +120,40 @@ function readPeerSignals(roomId) {
         }
 
     });
+}
+
+exports.sendData = function(data) {
+
+    console.log("Sending data: " + data);
+    remotePeer.send(data);
+}
+
+var videoPlayer = require('./videoplayer.js');
+
+function handleReceived(data) {
+
+    var message = JSON.parse(data);
+    var messageType = Object.keys(message)[0];
+
+    switch (messageType) {
+
+        case "videoState":
+
+            // { "videoState": { "position": vid.currentTime, "paused": vid.paused } }
+
+            videoPlayer.setPause(message["videoState"]["paused"]);
+            videoPlayer.setPosition(parseFloat(message["videoState"]["position"]));
+
+            //videoPlayer.setListenEvents(true);
+
+            break;
+
+        case "sourceURL":
+
+            // { "sourceURL": url}
+            videoPlayer.start(message["sourceURL"]);
+            
+            break;
+
+    }
 }

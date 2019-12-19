@@ -1,6 +1,5 @@
 console.log("Starting syncwatch");
 
-var torrentHandler = require('./torrenthandler.js');
 var videoPlayer = require('./videoplayer.js');
 var peers = require("./peers");
 
@@ -17,25 +16,19 @@ if (process.argv[2]) {
 } else { // else create your own room
 
   peers.createRoom();
-
-  // get video source from standard input
-  console.log("Paste a direct link to a video or a magnet link:");
-  var readline = require('readline');
-  var rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-    terminal: false
-  });
-
-  rl.on('line', function(line){
-
-    if (line.startsWith("magnet:")) {
-      torrentHandler.start(line);
-    } else {
-      videoPlayer.start(line);
-    }
-
-  });
-  
   //process.exit();
 }
+
+// get video source from standard input
+console.log("Paste a direct link to a video or a magnet link:");
+var readline = require('readline');
+var rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+  terminal: false
+});
+
+rl.on('line', function(line){
+    videoPlayer.start(line);
+    videoPlayer.setSource(line);
+});

@@ -11,7 +11,7 @@ exports.start = function(magnetURI) {
       server.listen(8000); // start the server listening to a port
     
       var interval = setInterval(function () {
-        console.clear();
+        //console.clear();
         console.log("Downloading: " + (torrent.progress * 100).toFixed(1) + "%" 
             + " - " + (torrent.downloadSpeed / Math.pow(10,6)).toFixed(2)  + " mb/s "
             + " from " + torrent.numPeers + " peer(s)"
@@ -33,7 +33,7 @@ exports.start = function(magnetURI) {
       // access individual files at http://localhost:<port>/<index> where index is the index
       // in the torrent.files array
     
-      videoPlayer.start("http://localhost:8000/0");
+      videoPlayer.start("http://localhost:8000/0"); // TODO: fix video file index
        
       // later, cleanup...
     

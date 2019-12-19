@@ -6,7 +6,7 @@ mpvPlayer.on('started', function(status) {
 
   if (firstStart) {
 
-    mpvPlayer.goToPosition(0.1);
+    mpvPlayer.goToPosition(0);
     mpvPlayer.pause();
 
     firstStart = false;
@@ -14,28 +14,84 @@ mpvPlayer.on('started', function(status) {
 
 });
 
+var peers = require("./peers");
+
+var listenPauseEvents = true;
+var listenPositionEvents = true;
+
 mpvPlayer.on('statuschange', function(status){
   //console.log(status);
 });
 
-mpvPlayer.on('paused', function(status) {
-  console.log("video paused");
+mpvPlayer.on('paused', function() {
+
+  if (listenPauseEvents && listenPositionEvents) {
+
+    mpvPlayer.getProperty("time-pos").then(function(value) {
+      console.log("video paused, position: ", value);
+      peers.sendData(JSON.stringify({ "videoState": { "position": value, "paused": true } }));
+    });
+  }
+
+  listenPauseEvents = true;
+
 });
 
-mpvPlayer.on('resumed', function(status) {
-  console.log("video resumed");
+mpvPlayer.on('resumed', function() {
+
+  if (listenPauseEvents && listenPositionEvents) {
+
+    mpvPlayer.getProperty("time-pos").then(function(value) {
+      console.log("video resumed, position: ", value);
+      peers.sendData(JSON.stringify({ "videoState": { "position": value, "paused": false } }));
+    });
+  }
+
+  listenPauseEvents = true;
+
 });
 
 mpvPlayer.on('seek', function(timeposition) {
-  console.log("video position changed " + timeposition.end);
+
+  if (listenPositionEvents && listenPositionEvents) {
+
+    mpvPlayer.getProperty("pause").then(function(value) {
+      console.log("video position changed: ", timeposition.end);
+      peers.sendData(JSON.stringify({ "videoState": { "position": timeposition.end, "paused": value } }));
+    });
+  }
+
+  listenPositionEvents = true;
+
 });
 
+var torrentHandler = require('./torrenthandler.js');
 exports.start = function(url) {
 
-    console.log("Starting video player with source url: " + url);
-    console.log("Please wait...");
-    mpvPlayer.load(url);
-    //mpvPlayer.load("https://www.youtube.com/watch?v=KBRU2VkUeh4");
+    if (url.startsWith("magnet:")) {
+      torrentHandler.start(url);
+    } else {
+
+      console.log("Starting video player with source url: " + url);
+      console.log("Please wait...");
+      mpvPlayer.load(url);
+    }
+}
+
+exports.setSource = function(sourceURL) {
+  mpvPlayer.load(sourceURL);
+  // send video url to peer
+  peers.sendData(JSON.stringify({ "sourceURL": sourceURL}));
+}
+
+exports.setPause = function(paused) {
+
+  listenPauseEvents = false;
+  paused ? mpvPlayer.pause() : mpvPlayer.play()
+}
+
+exports.setPosition = function(position) {
   
-    //mpv.volume(70);
+  listenPositionEvents = false;
+  mpvPlayer.goToPosition(position);
 }
