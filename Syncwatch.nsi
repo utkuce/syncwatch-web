@@ -7,9 +7,9 @@
 !define APP_NAME "Syncwatch"
 !define COMP_NAME "utku"
 !define VERSION "0.0.1.0"
-!define COPYRIGHT "Utku Çelik  © 2019"
+!define COPYRIGHT "Utku ï¿½elik  ï¿½ 2019"
 !define DESCRIPTION "Watch together"
-!define INSTALLER_NAME "C:\Users\utku\Desktop\syncwatch-0.0.1.exe"
+!define INSTALLER_NAME ".\dist\syncwatch-0.1.1.exe"
 !define MAIN_APP_EXE "syncwatch.exe"
 !define INSTALL_TYPE "SetShellVarContext current"
 !define REG_ROOT "HKCU"
@@ -76,10 +76,10 @@ Section -MainProgram
 ${INSTALL_TYPE}
 SetOverwrite ifnewer
 SetOutPath "$INSTDIR"
-File "C:\Users\utku\Desktop\syncwatch\mpv.exe"
-File "C:\Users\utku\Desktop\syncwatch\syncwatch.exe"
-File "C:\Users\utku\Desktop\syncwatch\youtube-dl.exe"
-File "C:\Users\utku\Desktop\syncwatch\wrtc.node"
+File ".\dist\mpv.exe"
+File ".\dist\syncwatch.exe"
+File ".\dist\youtube-dl.exe"
+File ".\dist\wrtc.node"
 
 WriteRegStr HKCR "Syncwatch" "" "URL:Syncwatch Protocol"
 WriteRegStr HKCR "Syncwatch" "URL Protocol" ""
