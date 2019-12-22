@@ -19,6 +19,10 @@ var peers = require("./peers");
 var listenPauseEvents = true;
 var listenPositionEvents = true;
 
+exports.setTitle = function(value) {
+  mpvPlayer.setProperty("title", value);
+}
+
 mpvPlayer.on('statuschange', function(status){
   //console.log(status);
 });

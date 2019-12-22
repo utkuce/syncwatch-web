@@ -12,15 +12,20 @@ exports.start = function(magnetURI) {
     
       var interval = setInterval(function () {
         //console.clear();
-        console.log("Downloading: " + (torrent.progress * 100).toFixed(1) + "%" 
-            + " - " + (torrent.downloadSpeed / Math.pow(10,6)).toFixed(2)  + " mb/s "
-            + " from " + torrent.numPeers + " peer(s)"
-            + " Time left: " + (torrent.timeRemaining/60000).toFixed(2) + " minutes");
+
+        var downloadInfo = torrent.name + " (Downloading: " + (torrent.progress * 100).toFixed(1) + "%" 
+        + " - " + (torrent.downloadSpeed / Math.pow(10,6)).toFixed(2)  + " mb/s "
+        + " from " + torrent.numPeers + " peer(s)"
+        + " ETA: " + (torrent.timeRemaining/60000).toFixed(2) + " minutes)";
+        
+        console.log(downloadInfo);
+        videoPlayer.setTitle(downloadInfo);
     
       }, 1000);
     
       torrent.on("done", function () {
-          console.log("File ready.");
+          console.log(torrent.name + " (Download complete)");
+          videoPlayer.setTitle(torrent.name + " (Download complete)");
           clearInterval(interval);
       });
     
