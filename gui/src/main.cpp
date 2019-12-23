@@ -26,8 +26,40 @@
 #include IMGUI_IMPL_OPENGL_LOADER_CUSTOM
 #endif
 
-
+#include <iostream>
+#include <string>
 #include "video_player.h"
+
+static void HelpMarker(const char* desc)
+{
+    ImGui::TextDisabled("(?)");
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::BeginTooltip();
+        ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+        ImGui::TextUnformatted(desc);
+        ImGui::PopTextWrapPos();
+        ImGui::EndTooltip();
+    }
+}
+
+const char* seconds_to_display(int input, char* output)
+{
+    input = input % (24 * 3600); 
+    int hours = input / 3600; 
+  
+    input %= 3600; 
+    int minutes = input / 60 ; 
+  
+    input %= 60; 
+    int seconds = input; 
+
+    if (hours != 0)
+        sprintf(output, "%02d:%02d:%02d", hours, minutes, seconds);
+    else
+        sprintf(output, "%02d:%02d", minutes, seconds);
+    return output;
+}
 
 
 // Main code
@@ -112,12 +144,10 @@ int main(int argc, char *argv[])
     //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
     //io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
     //io.Fonts->AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);
-    //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
+    //ImFont* font = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\arial.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
     //IM_ASSERT(font != NULL);
 
     // Our state
-    bool show_demo_window = true;
-    bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     // mpv
@@ -129,7 +159,17 @@ int main(int argc, char *argv[])
 
     const char *cmd[] = {"loadfile", argv[1], NULL};
     mpv_command_async(mpv, 0, cmd);
-   
+
+    mpv_observe_property(mpv, 0,"duration", MPV_FORMAT_INT64);
+    mpv_observe_property(mpv, 0,"playback-time", MPV_FORMAT_INT64);
+
+
+    int margin = 40;
+    bool show_info_panel = true;
+
+    bool fullscreen = true;
+    static int slider_position;
+
     // Main loop
     bool done = false;
     while (!done)
@@ -155,8 +195,7 @@ int main(int argc, char *argv[])
             if (event.type == SDL_KEYDOWN)
             {
                 if (event.key.keysym.sym == SDLK_SPACE) {
-                    const char *cmd_pause[] = {"cycle", "pause", NULL};
-                    mpv_command_async(mpv, 0, cmd_pause);
+                    mpv_play_pause();
                 }
             }
 
@@ -169,42 +208,150 @@ int main(int argc, char *argv[])
         ImGui_ImplSDL2_NewFrame(window);
         ImGui::NewFrame();
 
-        // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-        if (show_demo_window)
-            ImGui::ShowDemoWindow(&show_demo_window);
+        ImGuiStyle& style = ImGui::GetStyle();
+        style.WindowPadding = ImVec2(12,12);
+        style.ItemSpacing = ImVec2(8,12);
+        style.FramePadding = ImVec2(14,3);
 
-        // 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
+        ImGui::ShowDemoWindow();
+
+        if (show_info_panel)
         {
-            static float f = 0.0f;
-            static int counter = 0;
+            ImGui::SetNextWindowPos(ImVec2(margin, margin));
+            ImGui::SetNextItemWidth(350);
+            ImGui::Begin("Info", 0, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize);
 
-            ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+            ImGui::Separator();
+            ImGui::Text("Video source");
 
-            ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-            ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-            ImGui::Checkbox("Another Window", &show_another_window);
+            static char str1[128] = "";
+            ImGui::InputTextWithHint("", "Enter magnet link or url", str1, IM_ARRAYSIZE(str1));
+            ImGui::SameLine(); 
+            ImGui::Button("Stream");
+            ImGui::SameLine(); 
+            HelpMarker("Enter a magnet link or a youtube url");
 
-            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-            ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+            ImGui::Text("Downloading");
+            ImGui::SameLine(); 
+            ImGui::TextDisabled("file (?)");
+            if (ImGui::IsItemHovered())
+            {
+                ImGui::BeginTooltip();
+                ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+                ImGui::TextUnformatted("<long file name>");
+                ImGui::PopTextWrapPos();
+                ImGui::EndTooltip();
+            }
+            ImGui::SameLine(); 
+            ImGui::Text("from <n> peers");
 
-            if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-                counter++;
-            ImGui::SameLine();
-            ImGui::Text("counter = %d", counter);
+            float progress = 0.6f;
+            ImGui::ProgressBar(progress, ImVec2(0.0f,0.0f));
+            ImGui::SameLine(); 
+            ImGui::Text("<down> mb/s");
 
+            ImGui::Separator();
+            ImGui::Text("Room invite link");
+            const char* room_link = "syncwatch://room-<unique_id>";
+            ImGui::Text(room_link);
+            if (ImGui::Button("Copy to clipboard"))
+            {
+                ImGui::LogToClipboard();
+                ImGui::LogText(room_link);
+                ImGui::LogFinish();
+            }
+
+            ImGui::Separator();
+            ImGui::Text("Connected Peers");
+            ImGui::Text("<peer-name1> (you)");
+            ImGui::Text("<peer-name2>");
+            ImGui::Text("<peer-name3>");
+
+            ImGui::End();
+        }
+
+
+        {
+            static int volume = 0.0f;
+
+            int width, height;
+            SDL_GetWindowSize(window, &width, &height);
+            ImGui::SetNextWindowSize(ImVec2(width - margin*2, 0));
+            ImGui::SetNextWindowPos(ImVec2(margin, height - ImGui::GetTextLineHeightWithSpacing()*2 - margin));
+
+            ImGui::Begin("Media Controls", 0, ImGuiWindowFlags_NoTitleBar);
+
+            if (ImGui::Button("Play/Pause"))
+            {
+                mpv_play_pause();
+            }
+            
+            ImGui::SameLine(0, 10);
+            
+            if (ImGui::Button("Rewind 10s"))
+            {
+                std::cout << "Rewind button clicked" << std::endl;
+                const char *cmd_rewind[] = {"seek", "-10", "relative", NULL};
+                mpv_command_async(mpv, 0, cmd_rewind);
+            }
+
+            ImGui::SameLine(0, 10);
+
+            char slider_display[99], position_display[99], duration_display[99];
+            seconds_to_display(position, position_display);
+            seconds_to_display(duration, duration_display);
+            sprintf(slider_display, "%s/%s", position_display, duration_display);
+
+            ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+            if (ImGui::SliderInt("", &slider_position, 0, duration, slider_display))
+            {
+                std::cout << "Slider position: " << slider_position << std::endl;
+                const char *cmd_seek[] = {"seek", std::to_string(slider_position).c_str(), "absolute", NULL};
+                mpv_command_async(mpv, 0, cmd_seek);
+            }
+            else
+            {
+                if (ImGui::IsItemDeactivatedAfterEdit)
+                    slider_position = position;
+            }
+            
+            
+
+            ImGui::SetNextItemWidth(100);
+            if (ImGui::SliderInt("Volume", &volume, 0, 100))
+            {
+                
+            }
+
+            ImGui::SameLine(0, 10);
+
+            static bool mute;
+            ImGui::Checkbox("Mute", &mute);
+
+            ImGui::SameLine(0, 10);
+            
+            if (ImGui::Button("Fullscreen"))
+            {
+                SDL_SetWindowFullscreen(window,
+			        fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+
+                fullscreen = !fullscreen;
+            }
+
+            ImGui::SameLine(0, 10);
+            ImGui::Button("Video Source");
+            ImGui::SameLine(0, 10);
+            ImGui::Button("Join a room");
+            ImGui::SameLine(0, 10);
+            ImGui::Checkbox("Show Info Panel", &show_info_panel);
+            ImGui::SameLine(0, 10);
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
             ImGui::End();
+
         }
 
-        // 3. Show another simple window.
-        if (show_another_window)
-        {
-            ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-            ImGui::Text("Hello from another window!");
-            if (ImGui::Button("Close Me"))
-                show_another_window = false;
-            ImGui::End();
-        }
+        mpv_wait_async_requests(mpv);
 
         // Rendering
         ImGui::Render();

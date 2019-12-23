@@ -119,6 +119,23 @@ void mpv_events(SDL_Event event)
                     printf("log: %s", msg->text);
                 continue;
             }
+
+            if (mp_event->event_id == MPV_EVENT_PROPERTY_CHANGE) {
+
+                mpv_event_property* prop = mp_event->data;
+
+                if (strcmp(prop->name,"duration") == 0) {
+                    duration = *(int*)(prop->data); 
+                    printf("property change: %s, %d\n", prop->name, duration);
+                }
+
+                if (strcmp(prop->name,"playback-time") == 0) {
+                    position = *(int*)(prop->data); 
+                    printf("property change: %s, %d\n", prop->name, position);
+                }
+
+            }
+
             printf("event: %s\n", mpv_event_name(mp_event->event_id));
         }
     }
@@ -150,6 +167,13 @@ void mpv_redraw(SDL_Window *window)
         mpv_render_context_render(mpv_gl, params);
         //SDL_GL_SwapWindow(window);
     }
+}
+
+
+void mpv_play_pause()
+{
+    const char *cmd_pause[] = {"cycle", "pause", NULL};
+    mpv_command_async(mpv, 0, cmd_pause);
 }
 
 /*

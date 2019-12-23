@@ -21,6 +21,8 @@ int redraw;
 void mpv_events(SDL_Event event);
 void mpv_redraw(SDL_Window *window);
 
+void mpv_play_pause();
+int position, duration;
 
 #ifdef __cplusplus
 }
