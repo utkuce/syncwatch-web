@@ -12,6 +12,11 @@ exports.start = function(magnetURI) {
     
       var interval = setInterval(function () {
         //console.clear();
+        
+        videoPlayer.childProcess.stdin.write("torrent_progress:" + torrent.progress + "\n");
+        var speed = (torrent.downloadSpeed / Math.pow(10,6)).toFixed(2);
+        videoPlayer.childProcess.stdin.write("download_speed:" + speed + "\n");
+
 
         var downloadInfo = torrent.name + " (Downloading: " + (torrent.progress * 100).toFixed(1) + "%" 
         + " - " + (torrent.downloadSpeed / Math.pow(10,6)).toFixed(2)  + " mb/s "
@@ -24,6 +29,9 @@ exports.start = function(magnetURI) {
       }, 1000);
     
       torrent.on("done", function () {
+
+          videoPlayer.childProcess.stdin.write("download_speed:" + 0 + "\n");
+
           console.log(torrent.name + " (Download complete)");
           videoPlayer.setTitle(torrent.name + " (Download complete)");
           clearInterval(interval);

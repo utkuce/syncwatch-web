@@ -1,3 +1,10 @@
+const { spawn } = require('child_process');
+const childProcess = spawn('./gui/bin/syncwatchUI.exe');
+exports.childProcess = childProcess;
+
+childProcess.stdin.setEncoding('utf-8');
+childProcess.stdout.pipe(process.stdout);
+
 const mpvAPI = require('node-mpv');
 const mpvPlayer = new mpvAPI();
 
@@ -78,7 +85,11 @@ exports.start = function(url) {
 
       console.log("Starting video player with source url: " + url);
       console.log("Please wait...");
-      mpvPlayer.load(url);
+      //mpvPlayer.load(url);
+
+
+      childProcess.stdin.write("url:http://localhost:8000/0\n");
+      //child.stdin.end(); 
     }
 }
 

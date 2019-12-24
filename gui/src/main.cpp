@@ -29,6 +29,10 @@
 #include <iostream>
 #include <string>
 #include "video_player.h"
+#include <thread>
+
+float download_progress = 0.0f;
+std::string download_speed = "0 mb/s";
 
 static void HelpMarker(const char* desc)
 {
@@ -64,10 +68,40 @@ const char* seconds_to_display(int input, char* output)
 bool fullscreen = true;
 void toggle_fullscreen(SDL_Window* window)
 {
-    SDL_SetWindowFullscreen(window,
-			        fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+    SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+    fullscreen = !fullscreen;
+}
 
-                fullscreen = !fullscreen;
+void wait_stdin()
+{
+    std::string input;
+    std::cin >> input;
+    std::cout << input << std::endl;
+
+    if (input.rfind("url:", 0) == 0) 
+    {
+        std::string url = input.substr(std::string("url:").length());
+        const char *cmd[] = {"loadfile", url.c_str(), NULL};
+        mpv_command_async(mpv, 0, cmd);
+    }
+
+    if (input.rfind("torrent_progress:", 0) == 0)
+    {
+        download_progress = strtof(input.substr(std::string("torrent_progress:").length()).c_str(),0);
+    }
+
+    if (input.rfind("download_speed:", 0) == 0)
+    {
+        download_speed = input.substr(std::string("download_speed:").length()) + " mb/s" ;
+    }
+}
+
+void mpv_input()
+{
+    while(true)
+    {
+        wait_stdin();
+    }
 }
 
 // Main code
@@ -162,12 +196,11 @@ int main(int argc, char *argv[])
     initialize_mpv();
     SDL_SetHint(SDL_HINT_NO_SIGNAL_HANDLERS, "no");
 
-    if (argc != 2)
-        die("pass a single media file as argument");
+    //if (argc != 2)
+    //    die("pass a single media file as argument");
 
-    const char *cmd[] = {"loadfile", argv[1], NULL};
-    mpv_command_async(mpv, 0, cmd);
-
+    std::thread input_thread(&mpv_input);
+  
     mpv_observe_property(mpv, 0,"duration", MPV_FORMAT_INT64);
     mpv_observe_property(mpv, 0,"playback-time", MPV_FORMAT_INT64);
 
@@ -216,10 +249,23 @@ int main(int argc, char *argv[])
                     SDL_SetWindowFullscreen(window, 0);
                     fullscreen = false;
                 }
+
+                if (event.key.keysym.sym == SDLK_RIGHT) {
+                    std::cout << "seeking forward" << std::endl;
+                    const char *seek[] = {"seek", "10", "relative", NULL};
+                    mpv_command_async(mpv, 0, seek);
+                }
+
+                if (event.key.keysym.sym == SDLK_LEFT) {
+                    std::cout << "seeking backwards" << std::endl;
+                    const char *seek[] = {"seek", "-10", "relative", NULL};
+                    mpv_command_async(mpv, 0, seek);
+                }
             }
 
             if (event.type == SDL_MOUSEMOTION) {
                 last_mouse_motion = event.motion.timestamp;
+                //std::cout << "Mouse moting event: " << last_mouse_motion << std::endl;
             }
 
             mpv_events(event);
@@ -256,7 +302,7 @@ int main(int argc, char *argv[])
             ImGui::SameLine(); 
             ImGui::Button("Stream");
             ImGui::SameLine(); 
-            HelpMarker("Enter a magnet link or a youtube url");
+            HelpMarker("Enter a magnet link or a video url (youtube etc.)\nA complete list of supported sources can be found on\nhttps://ytdl-org.github.io/youtube-dl/supportedsites.html");
 
             ImGui::Text("Downloading");
             ImGui::SameLine(); 
@@ -272,10 +318,10 @@ int main(int argc, char *argv[])
             ImGui::SameLine(); 
             ImGui::Text("from <n> peers");
 
-            float progress = 0.6f;
-            ImGui::ProgressBar(progress, ImVec2(0.0f,0.0f));
+            ImGui::ProgressBar(download_progress, ImVec2(0.0f,0.0f));
             ImGui::SameLine(); 
-            ImGui::Text("<down> mb/s");
+
+            ImGui::Text(download_progress == 1.0f ? "Done" : download_speed.c_str());
 
             ImGui::Separator();
             ImGui::Text("Room invite link");
@@ -377,8 +423,6 @@ int main(int argc, char *argv[])
 
         }
 
-        mpv_wait_async_requests(mpv);
-
         // Rendering
         ImGui::Render();
         glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
@@ -400,6 +444,8 @@ int main(int argc, char *argv[])
     SDL_GL_DeleteContext(gl_context);
     SDL_DestroyWindow(window);
     SDL_Quit();
+
+    input_thread.join();
 
     return 0;
 }
