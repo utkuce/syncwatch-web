@@ -61,6 +61,14 @@ const char* seconds_to_display(int input, char* output)
     return output;
 }
 
+bool fullscreen = true;
+void toggle_fullscreen(SDL_Window* window)
+{
+    SDL_SetWindowFullscreen(window,
+			        fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+
+                fullscreen = !fullscreen;
+}
 
 // Main code
 int main(int argc, char *argv[])
@@ -167,7 +175,7 @@ int main(int argc, char *argv[])
     int margin = 40;
     bool show_info_panel = true;
 
-    bool fullscreen = true;
+    
     static int slider_position;
     static int last_mouse_motion = 0;
     static bool show_interface = true;
@@ -198,6 +206,15 @@ int main(int argc, char *argv[])
             {
                 if (event.key.keysym.sym == SDLK_SPACE) {
                     mpv_play_pause();
+                }
+
+                if (event.key.keysym.sym == SDLK_f) {
+                    toggle_fullscreen(window);
+                }
+
+                if (event.key.keysym.sym == SDLK_ESCAPE) {
+                    SDL_SetWindowFullscreen(window, 0);
+                    fullscreen = false;
                 }
             }
 
@@ -342,10 +359,7 @@ int main(int argc, char *argv[])
             
             if (ImGui::Button("Fullscreen"))
             {
-                SDL_SetWindowFullscreen(window,
-			        fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
-
-                fullscreen = !fullscreen;
+                toggle_fullscreen(window);
             }
 
             ImGui::SameLine(0, 10);
