@@ -33,6 +33,8 @@
 
 float download_progress = 0.0f;
 std::string download_speed = "0 mb/s";
+std::string torrent_name = "<filename>";
+std::string torrent_peers = "<n>";
 
 static void HelpMarker(const char* desc)
 {
@@ -93,6 +95,16 @@ void wait_stdin()
     if (input.rfind("download_speed:", 0) == 0)
     {
         download_speed = input.substr(std::string("download_speed:").length()) + " mb/s" ;
+    }
+
+    if (input.rfind("torrent_name:", 0) == 0)
+    {
+        torrent_name = input.substr(std::string("torrent_name:").length());
+    }
+
+    if (input.rfind("torrent_peers:", 0) == 0)
+    {
+        torrent_peers = input.substr(std::string("torrent_peers:").length());
     }
 }
 
@@ -311,12 +323,12 @@ int main(int argc, char *argv[])
             {
                 ImGui::BeginTooltip();
                 ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-                ImGui::TextUnformatted("<long file name>");
+                ImGui::TextUnformatted(torrent_name.c_str());
                 ImGui::PopTextWrapPos();
                 ImGui::EndTooltip();
             }
             ImGui::SameLine(); 
-            ImGui::Text("from <n> peers");
+            ImGui::Text(download_progress == 1.0f ? "" : std::string("from " + torrent_peers + " peers").c_str());
 
             ImGui::ProgressBar(download_progress, ImVec2(0.0f,0.0f));
             ImGui::SameLine(); 

@@ -16,6 +16,8 @@ exports.start = function(magnetURI) {
         videoPlayer.childProcess.stdin.write("torrent_progress:" + torrent.progress + "\n");
         var speed = (torrent.downloadSpeed / Math.pow(10,6)).toFixed(2);
         videoPlayer.childProcess.stdin.write("download_speed:" + speed + "\n");
+        videoPlayer.childProcess.stdin.write("torrent_name:" + torrent.name + "\n");
+        videoPlayer.childProcess.stdin.write("torrent_peers:" + torrent.numPeers + "\n");
 
 
         var downloadInfo = torrent.name + " (Downloading: " + (torrent.progress * 100).toFixed(1) + "%" 
@@ -30,7 +32,9 @@ exports.start = function(magnetURI) {
     
       torrent.on("done", function () {
 
+          videoPlayer.childProcess.stdin.write("torrent_progress:" + 1.0 + "\n");
           videoPlayer.childProcess.stdin.write("download_speed:" + 0 + "\n");
+          videoPlayer.childProcess.stdin.write("torrent_name:" + torrent.name + "\n");
 
           console.log(torrent.name + " (Download complete)");
           videoPlayer.setTitle(torrent.name + " (Download complete)");
