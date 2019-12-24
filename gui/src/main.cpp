@@ -169,6 +169,8 @@ int main(int argc, char *argv[])
 
     bool fullscreen = true;
     static int slider_position;
+    static int last_mouse_motion = 0;
+    static bool show_interface = true;
 
     // Main loop
     bool done = false;
@@ -199,9 +201,16 @@ int main(int argc, char *argv[])
                 }
             }
 
+            if (event.type == SDL_MOUSEMOTION) {
+                last_mouse_motion = event.motion.timestamp;
+            }
+
             mpv_events(event);
         }
 
+        // if mouse is hovered over a ui component or 
+        // it's been less than 2 seconds since the last mouse motion
+        show_interface = io.WantCaptureMouse || SDL_GetTicks() - last_mouse_motion < 2000;
 
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
@@ -213,9 +222,10 @@ int main(int argc, char *argv[])
         style.ItemSpacing = ImVec2(8,12);
         style.FramePadding = ImVec2(14,3);
 
-        ImGui::ShowDemoWindow();
+        //ImGui::ShowDemoWindow();
+        SDL_ShowCursor(show_interface);
 
-        if (show_info_panel)
+        if (show_info_panel && show_interface)
         {
             ImGui::SetNextWindowPos(ImVec2(margin, margin));
             ImGui::SetNextItemWidth(350);
@@ -270,7 +280,7 @@ int main(int argc, char *argv[])
             ImGui::End();
         }
 
-
+        if (show_interface)
         {
             static int volume = 0.0f;
 
@@ -348,6 +358,8 @@ int main(int argc, char *argv[])
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
             ImGui::End();
+
+            
 
         }
 
