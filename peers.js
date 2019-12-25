@@ -41,8 +41,12 @@ exports.createRoom = function() {
             }
         });
 
+    var roomLink = "syncwatch://" + roomId;
     console.log("Creating room");
-    console.log("Join link: " + "syncwatch://" + roomId);
+    console.log("Join link: " + roomLink);
+
+    require("./videoplayer.js").childProcess.stdin.write("room_link:" + roomLink + "\n");
+
     
     remotePeer.on('signal', data => {
 

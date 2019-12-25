@@ -35,6 +35,7 @@ float download_progress = 0.0f;
 std::string download_speed = "0 mb/s";
 std::string torrent_name = "<filename>";
 std::string torrent_peers = "<n>";
+std::string room_link = "syncwatch://room-<unique_id>";
 
 static void HelpMarker(const char* desc)
 {
@@ -105,6 +106,11 @@ void wait_stdin()
     if (input.rfind("torrent_peers:", 0) == 0)
     {
         torrent_peers = input.substr(std::string("torrent_peers:").length());
+    }
+
+    if (input.rfind("room_link:", 0) == 0)
+    {
+        room_link = input.substr(std::string("room_link:").length());
     }
 }
 
@@ -307,12 +313,29 @@ int main(int argc, char *argv[])
             ImGui::Begin("Info", 0, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize);
 
             ImGui::Separator();
+
+            ImGui::Text("Room invite link");
+            ImGui::Text(room_link.c_str());
+            if (ImGui::Button("Copy to clipboard"))
+            {
+                ImGui::LogToClipboard();
+                ImGui::LogText(room_link.c_str());
+                ImGui::LogFinish();
+            }
+
+            ImGui::Separator();
+
             ImGui::Text("Video source");
 
-            static char str1[128] = "";
+            static char str1[1024] = "";
             ImGui::InputTextWithHint("", "Enter magnet link or url", str1, IM_ARRAYSIZE(str1));
             ImGui::SameLine(); 
-            ImGui::Button("Stream");
+            if (ImGui::Button("Stream")) 
+            {
+                // send to parent process
+                std::cout << "source:" << str1 << std::endl;
+            }
+
             ImGui::SameLine(); 
             HelpMarker("Enter a magnet link or a video url (youtube etc.)\nA complete list of supported sources can be found on\nhttps://ytdl-org.github.io/youtube-dl/supportedsites.html");
 
@@ -336,17 +359,7 @@ int main(int argc, char *argv[])
             ImGui::Text(download_progress == 1.0f ? "Done" : download_speed.c_str());
 
             ImGui::Separator();
-            ImGui::Text("Room invite link");
-            const char* room_link = "syncwatch://room-<unique_id>";
-            ImGui::Text(room_link);
-            if (ImGui::Button("Copy to clipboard"))
-            {
-                ImGui::LogToClipboard();
-                ImGui::LogText(room_link);
-                ImGui::LogFinish();
-            }
 
-            ImGui::Separator();
             ImGui::Text("Connected Peers");
             ImGui::Text("<peer-name1> (you)");
             ImGui::Text("<peer-name2>");
