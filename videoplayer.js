@@ -3,7 +3,18 @@ const childProcess = spawn('./gui/bin/syncwatchUI.exe');
 exports.childProcess = childProcess;
 
 childProcess.stdin.setEncoding('utf-8');
-childProcess.stdout.pipe(process.stdout);
+//childProcess.stdout.pipe(process.stdout);
+
+childProcess.stdout.on('data', function (data) {
+
+  //console.log("Data from ui child process:" + data);
+
+  data = String(data);
+  if (data.startsWith('source:')) {
+    start(data.substring('source:'.length));
+  }
+
+});
 
 const mpvAPI = require('node-mpv');
 const mpvPlayer = new mpvAPI();
@@ -77,7 +88,7 @@ mpvPlayer.on('seek', function(timeposition) {
 });
 
 var torrentHandler = require('./torrenthandler.js');
-exports.start = function(url) {
+function start(url) {
 
     if (url.startsWith("magnet:")) {
       torrentHandler.start(url);
@@ -92,6 +103,8 @@ exports.start = function(url) {
       //child.stdin.end(); 
     }
 }
+
+exports.start = start;
 
 exports.setSource = function(sourceURL) {
   mpvPlayer.load(sourceURL);
