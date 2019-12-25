@@ -30,12 +30,14 @@
 #include <string>
 #include "video_player.h"
 #include <thread>
+#include <vector>
 
 float download_progress = 0.0f;
 std::string download_speed = "0 mb/s";
 std::string torrent_name = "<filename>";
 std::string torrent_peers = "<n>";
 std::string room_link = "syncwatch://room-<unique_id>";
+std::vector<std::string> peers;
 
 static void HelpMarker(const char* desc)
 {
@@ -111,6 +113,16 @@ void wait_stdin()
     if (input.rfind("room_link:", 0) == 0)
     {
         room_link = input.substr(std::string("room_link:").length());
+    }
+
+    if (input.rfind("peer_me:", 0) == 0)
+    {
+        peers.push_back(input.substr(std::string("peer_me:").length()) + " (you)");
+    }
+
+    if (input.rfind("new_peer:", 0) == 0)
+    {
+        peers.push_back(input.substr(std::string("new_peer:").length()));
     }
 }
 
@@ -361,9 +373,17 @@ int main(int argc, char *argv[])
             ImGui::Separator();
 
             ImGui::Text("Connected Peers");
-            ImGui::Text("<peer-name1> (you)");
-            ImGui::Text("<peer-name2>");
-            ImGui::Text("<peer-name3>");
+            if (peers.empty())
+            {
+                ImGui::Text("None");
+            }
+            else
+            {
+                for (std::vector<std::string>::iterator it = peers.begin() ; it != peers.end(); ++it)
+                    ImGui::Text((*it).c_str());
+            }
+            
+           
 
             ImGui::End();
         }

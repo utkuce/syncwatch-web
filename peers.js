@@ -118,9 +118,12 @@ function readPeerSignals(roomId) {
                 console.log("Adding signaling data for " + peer.key);
                 //console.log(signalData.val() , "\n");
                 remotePeer.signal(signalData.val()); 
+
+                videoPlayer.childProcess.stdin.write("new_peer:" + peer.key + "\n");
             });  
         } else {
             console.log("Its own signal data, ignoring...");
+            videoPlayer.childProcess.stdin.write("peer_me:" + peer.key + "\n");
         }
 
     });

@@ -11,7 +11,7 @@ childProcess.stdout.on('data', function (data) {
 
   data = String(data);
   if (data.startsWith('source:')) {
-    start(data.substring('source:'.length));
+    setSource(data.substring('source:'.length));
   }
 
 });
@@ -99,15 +99,16 @@ function start(url) {
       //mpvPlayer.load(url);
 
 
-      childProcess.stdin.write("url:http://localhost:8000/0\n");
+      childProcess.stdin.write("url:" + url + "\n");
       //child.stdin.end(); 
     }
 }
 
 exports.start = start;
 
-exports.setSource = function(sourceURL) {
-  mpvPlayer.load(sourceURL);
+setSource = function(sourceURL) {
+  //mpvPlayer.load(sourceURL);
+  start(sourceURL)
   // send video url to peer
   peers.sendData(JSON.stringify({ "sourceURL": sourceURL}));
 }
