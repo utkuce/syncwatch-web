@@ -1,33 +1,23 @@
-const { spawn } = require('child_process');
-const childProcess = spawn('./gui/bin/syncwatchUI.exe');
-exports.childProcess = childProcess;
-
-childProcess.stdin.setEncoding('utf-8');
-//childProcess.stdout.pipe(process.stdout);
-
-childProcess.stdout.on('data', function (data) {
-
-  //console.log("Data from ui child process:" + data);
-
-  data = String(data);
-  if (data.startsWith('source:')) {
-    setSource(data.substring('source:'.length));
-  }
-
-});
-
 const mpvAPI = require('node-mpv');
-const mpvPlayer = new mpvAPI();
+const mpvPlayer = new mpvAPI({
+  //binary: './gui/bin/syncwatchUI.exe',
+  //socket: "\\\\.\\pipe\\syncwatch-socket",
+  auto_restart: false
+});
 
 var firstStart = true;
 mpvPlayer.on('started', function(status) {
 
   if (firstStart) {
 
+    listenPositionEvents = false;
     mpvPlayer.goToPosition(0);
+
+    listenPauseEvents = false;
     mpvPlayer.pause();
 
     firstStart = false;
+
   }
 
 });
@@ -36,6 +26,11 @@ var peers = require("./peers");
 
 var listenPauseEvents = true;
 var listenPositionEvents = true;
+
+var currentSource = "";
+exports.getCurrentSource = function() {
+  return currentSource;
+}
 
 exports.setTitle = function(value) {
   mpvPlayer.setProperty("title", value);
@@ -75,7 +70,7 @@ mpvPlayer.on('resumed', function() {
 
 mpvPlayer.on('seek', function(timeposition) {
 
-  if (listenPositionEvents && listenPositionEvents) {
+  if (listenPauseEvents && listenPositionEvents) {
 
     mpvPlayer.getProperty("pause").then(function(value) {
       console.log("video position changed: ", timeposition.end);
@@ -91,26 +86,31 @@ var torrentHandler = require('./torrenthandler.js');
 function start(url) {
 
     if (url.startsWith("magnet:")) {
+
+      console.log("Received magent link, forwarding to torrent handler");
       torrentHandler.start(url);
+
     } else {
 
       console.log("Starting video player with source url: " + url);
       console.log("Please wait...");
-      //mpvPlayer.load(url);
+      mpvPlayer.load(url);
 
-
-      childProcess.stdin.write("url:" + url + "\n");
+      //childProcess.stdin.write("url:" + url + "\n");
       //child.stdin.end(); 
     }
 }
 
 exports.start = start;
 
-setSource = function(sourceURL) {
-  //mpvPlayer.load(sourceURL);
-  start(sourceURL)
+exports.setSource = function(sourceURL) {
+
+  currentSource = sourceURL;
+  start(sourceURL);
+
   // send video url to peer
-  peers.sendData(JSON.stringify({ "sourceURL": sourceURL}));
+  // if connected
+  //peers.sendData(JSON.stringify({ "sourceURL": sourceURL}));
 }
 
 exports.setPause = function(paused) {
@@ -122,5 +122,6 @@ exports.setPause = function(paused) {
 exports.setPosition = function(position) {
   
   listenPositionEvents = false;
+  //childProcess.stdin.write("position:" + position + "\n");
   mpvPlayer.goToPosition(position);
 }
