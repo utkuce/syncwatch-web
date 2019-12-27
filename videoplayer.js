@@ -1,5 +1,8 @@
 const mpvAPI = require('node-mpv');
 const mpvPlayer = new mpvAPI({
+  binary: './gui/bin/syncwatchUI.exe',
+  socket: "\\\\.\\pipe\\syncwatch-socket",
+  ipc_command: "--input-ipc-server", // prevents the --version call and ui exe hanging
 });
 
 var firstStart = true;

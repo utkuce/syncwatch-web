@@ -37,6 +37,9 @@ void initialize_mpv()
     if (!mpv)
         die("context init failed");
 
+
+    mpv_set_option_string(mpv, "input-ipc-server", "\\\\.\\pipe\\syncwatch-socket");  
+
     // Some minor options can only be set before mpv_initialize().
     if (mpv_initialize(mpv) < 0)
         die("mpv init failed");
@@ -124,16 +127,17 @@ void mpv_events(SDL_Event event)
 
                 mpv_event_property* prop = mp_event->data;
 
+                printf("prop name %s\n", prop->name);
+
                 if (strcmp(prop->name,"duration") == 0) {
                     duration = *(int*)(prop->data); 
-                    printf("property change: %s, %d\n", prop->name, duration);
+                    //printf("property change: %s, %d\n", prop->name, duration);
                 }
 
                 if (strcmp(prop->name,"playback-time") == 0) {
                     position = *(int*)(prop->data); 
-                    printf("property change: %s, %d\n", prop->name, position);
+                    //printf("property change: %s, %d\n", prop->name, position);
                 }
-
             }
 
             printf("event: %s\n", mpv_event_name(mp_event->event_id));
@@ -174,4 +178,10 @@ void mpv_play_pause()
 {
     const char *cmd_pause[] = {"cycle", "pause", NULL};
     mpv_command_async(mpv, 0, cmd_pause);
+}
+
+void mpv_seek(const char* value, const char* type)
+{
+    const char *seek[] = {"seek", value, type, NULL};
+    mpv_command_async(mpv, 0, seek);
 }
