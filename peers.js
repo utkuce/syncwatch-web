@@ -45,8 +45,6 @@ exports.createRoom = function() {
     console.log("Creating room");
     console.log("Join link: " + roomLink);
 
-    require("./videoplayer.js").childProcess.stdin.write("room_link:" + roomLink + "\n");
-
     
     remotePeer.on('signal', data => {
 
@@ -61,6 +59,7 @@ exports.createRoom = function() {
     remotePeer.on('connect', () => {
 
         remotePeer.send(JSON.stringify({'info': 'Connection established'}));
+        remotePeer.send(JSON.stringify({ "sourceURL": videoPlayer.getCurrentSource()}));
         
         // wait for 'connect' event before using the data channel
         console.log("Connected to peer");
@@ -119,11 +118,9 @@ function readPeerSignals(roomId) {
                 //console.log(signalData.val() , "\n");
                 remotePeer.signal(signalData.val()); 
 
-                videoPlayer.childProcess.stdin.write("new_peer:" + peer.key + "\n");
             });  
         } else {
             console.log("Its own signal data, ignoring...");
-            videoPlayer.childProcess.stdin.write("peer_me:" + peer.key + "\n");
         }
 
     });

@@ -1,25 +1,14 @@
 const mpvAPI = require('node-mpv');
 const mpvPlayer = new mpvAPI({
-  //binary: './gui/bin/syncwatchUI.exe',
-  //socket: "\\\\.\\pipe\\syncwatch-socket",
-  auto_restart: false
 });
 
 var firstStart = true;
 mpvPlayer.on('started', function(status) {
 
   if (firstStart) {
-
-    listenPositionEvents = false;
-    mpvPlayer.goToPosition(0);
-
-    listenPauseEvents = false;
     mpvPlayer.pause();
-
-    firstStart = false;
-
   }
-
+  
 });
 
 var peers = require("./peers");
@@ -36,27 +25,35 @@ exports.setTitle = function(value) {
   mpvPlayer.setProperty("title", value);
 }
 
-mpvPlayer.on('statuschange', function(status){
-  //console.log(status);
+mpvPlayer.on('stopped', function(){
+  console.log("mpv stopped");
+  //process.exit();
 });
 
 mpvPlayer.on('paused', function() {
 
-  if (listenPauseEvents && listenPositionEvents) {
+  if (listenPauseEvents && !firstStart) {
 
     mpvPlayer.getProperty("time-pos").then(function(value) {
+
+      lastPosEvent = value;
       console.log("video paused, position: ", value);
       peers.sendData(JSON.stringify({ "videoState": { "position": value, "paused": true } }));
     });
   }
+  else
+  {
+    console.log("listenPauseEvents: " + listenPauseEvents + " , firstStart: " + firstStart);
+  }
 
   listenPauseEvents = true;
+  firstStart = false;
 
 });
 
 mpvPlayer.on('resumed', function() {
 
-  if (listenPauseEvents && listenPositionEvents) {
+  if (listenPauseEvents) {
 
     mpvPlayer.getProperty("time-pos").then(function(value) {
       console.log("video resumed, position: ", value);
@@ -68,16 +65,21 @@ mpvPlayer.on('resumed', function() {
 
 });
 
+var lastSeekEvent =  "";
 mpvPlayer.on('seek', function(timeposition) {
 
-  if (listenPauseEvents && listenPositionEvents) {
+  if (lastSeekEvent != timeposition.end) { // prevent duplicate events
 
-    mpvPlayer.getProperty("pause").then(function(value) {
-      console.log("video position changed: ", timeposition.end);
-      peers.sendData(JSON.stringify({ "videoState": { "position": timeposition.end, "paused": value } }));
-    });
+    if (listenPositionEvents) {
+
+      mpvPlayer.getProperty("pause").then(function(value) {
+        console.log("video position changed: ", timeposition.end);
+        peers.sendData(JSON.stringify({ "videoState": { "position": timeposition.end, "paused": value } }));
+      });
+    }
   }
 
+  lastSeekEvent = timeposition.end;
   listenPositionEvents = true;
 
 });
@@ -116,12 +118,11 @@ exports.setSource = function(sourceURL) {
 exports.setPause = function(paused) {
 
   listenPauseEvents = false;
-  paused ? mpvPlayer.pause() : mpvPlayer.play()
+  paused ? mpvPlayer.pause() : mpvPlayer.play();
 }
 
 exports.setPosition = function(position) {
   
   listenPositionEvents = false;
-  //childProcess.stdin.write("position:" + position + "\n");
   mpvPlayer.goToPosition(position);
 }

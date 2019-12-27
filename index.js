@@ -14,8 +14,8 @@ if (process.argv[2]) {
   }
 
   if (process.argv[2].startsWith("magnet:")) {
+    videoPlayer.setSource(process.argv[2]);
     peers.createRoom();
-    videoPlayer.start(process.argv[2]);
   }
 
 } else { // else create your own room
