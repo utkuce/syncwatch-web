@@ -29,6 +29,7 @@ extern int position, duration;
 
 void set_room_link(const char*);
 void set_torrent_info(const char**);
+void set_new_peer(const char*);
 
 #ifdef __cplusplus
 }

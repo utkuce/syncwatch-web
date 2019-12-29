@@ -157,6 +157,9 @@ void mpv_events(SDL_Event event)
                 
                 if (strcmp(message->args[0],"roomLink") == 0)
                     set_room_link(message->args[1]);
+
+                if (strcmp(message->args[0],"newPeer") == 0)
+                    set_new_peer(message->args[1]);
                 
             }
 

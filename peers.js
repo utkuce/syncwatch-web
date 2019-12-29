@@ -53,6 +53,8 @@ exports.createRoom = function() {
     
         // add yourself to the room with your signaling data
         firebase.database().ref(roomId + "/" + myPeerId).push(data);
+        videoPlayer.setNewPeer(myPeerId + " (you)");
+
         // and attempt to read others' signaling data
         readPeerSignals(roomId);
     });
@@ -88,6 +90,7 @@ exports.join = function(roomId) {
         // adding it to the database acts as signaling assuming other peer 
         // will read it immediately and call signal on itself
         firebase.database().ref(roomId + "/" + myPeerId).push(data);  
+        videoPlayer.setNewPeer(myPeerId + " (you)");
     });
 
     remotePeer.on('data', data => {
@@ -118,6 +121,8 @@ function readPeerSignals(roomId) {
                 console.log("Adding signaling data for " + peer.key);
                 //console.log(signalData.val() , "\n");
                 remotePeer.signal(signalData.val()); 
+
+                videoPlayer.setNewPeer(peer.key);
 
             });  
         } else {

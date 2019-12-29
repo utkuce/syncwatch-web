@@ -230,3 +230,8 @@ void set_last_mouse_motion(int timestamp)
 {
     last_mouse_motion = timestamp;
 }
+
+void set_new_peer(const char* peer_id)
+{
+    peers.push_back(std::string(peer_id));
+}

@@ -14,6 +14,10 @@ exports.setRoomInfo = function(roomLink) {
   mpvPlayer.command("script-message", ["roomLink", String(roomLink)]);
 }
 
+exports.setNewPeer = function(peerId, peerName) {
+  mpvPlayer.command("script-message", ["newPeer", String(peerId), String(peerName)]);
+}
+
 var firstStart = true;
 mpvPlayer.on('started', function(status) {
 
