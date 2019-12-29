@@ -5,6 +5,15 @@ const mpvPlayer = new mpvAPI({
   ipc_command: "--input-ipc-server", // prevents the --version call and ui exe hanging
 });
 
+exports.setTorrentInfo = function(name, progress, speed, time, peers) {
+  mpvPlayer.command("script-message", [
+    "torrentInfo", String(name), String(progress), String(speed), String(time), String(peers)]);
+}
+
+exports.setRoomInfo = function(roomLink) {
+  mpvPlayer.command("script-message", ["roomLink", String(roomLink)]);
+}
+
 var firstStart = true;
 mpvPlayer.on('started', function(status) {
 

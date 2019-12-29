@@ -31,6 +31,12 @@ void on_mpv_render_update(void *ctx)
     SDL_PushEvent(&event);
 }
 
+Uint32 wakeup_on_mpv_render_update, wakeup_on_mpv_events;
+mpv_handle *mpv;
+mpv_render_context *mpv_gl;
+int redraw;
+int position, duration;
+
 void initialize_mpv()
 {
     mpv = mpv_create();
@@ -38,7 +44,8 @@ void initialize_mpv()
         die("context init failed");
 
 
-    mpv_set_option_string(mpv, "input-ipc-server", "\\\\.\\pipe\\syncwatch-socket");  
+    mpv_set_option_string(mpv, "input-ipc-server", "\\\\.\\pipe\\syncwatch-socket");
+    //mpv_set_option_string(mpv, "log-file", "mpv-log.txt");  
 
     // Some minor options can only be set before mpv_initialize().
     if (mpv_initialize(mpv) < 0)
@@ -108,9 +115,12 @@ void mpv_events(SDL_Event event)
     if (event.type == wakeup_on_mpv_events) {
         // Handle all remaining mpv events.
         while (1) {
+
             mpv_event *mp_event = mpv_wait_event(mpv, 0);
+
             if (mp_event->event_id == MPV_EVENT_NONE)
                 break;
+/*
             if (mp_event->event_id == MPV_EVENT_LOG_MESSAGE) {
                 mpv_event_log_message *msg = mp_event->data;
                 // Print log messages about DR allocations, just to
@@ -121,13 +131,11 @@ void mpv_events(SDL_Event event)
                 if (strstr(msg->text, "DR image"))
                     printf("log: %s", msg->text);
                 continue;
-            }
+            }*/
 
             if (mp_event->event_id == MPV_EVENT_PROPERTY_CHANGE) {
 
                 mpv_event_property* prop = mp_event->data;
-
-                printf("prop name %s\n", prop->name);
 
                 if (strcmp(prop->name,"duration") == 0) {
                     duration = *(int*)(prop->data); 
@@ -138,6 +146,18 @@ void mpv_events(SDL_Event event)
                     position = *(int*)(prop->data); 
                     //printf("property change: %s, %d\n", prop->name, position);
                 }
+            }
+
+            if (mp_event->event_id == MPV_EVENT_CLIENT_MESSAGE) {
+                
+                mpv_event_client_message* message = mp_event->data;
+
+                if (strcmp(message->args[0],"torrentInfo") == 0)
+                    set_torrent_info(message->args);
+                
+                if (strcmp(message->args[0],"roomLink") == 0)
+                    set_room_link(message->args[1]);
+                
             }
 
             printf("event: %s\n", mpv_event_name(mp_event->event_id));

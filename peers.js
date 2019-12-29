@@ -45,6 +45,7 @@ exports.createRoom = function() {
     console.log("Creating room");
     console.log("Join link: " + roomLink);
 
+    videoPlayer.setRoomInfo(roomLink);
     
     remotePeer.on('signal', data => {
 

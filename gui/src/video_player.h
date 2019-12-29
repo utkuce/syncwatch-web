@@ -8,25 +8,27 @@ extern "C" {
 #include <mpv/client.h>
 #include <mpv/render_gl.h>
 
-Uint32 wakeup_on_mpv_render_update, wakeup_on_mpv_events;
+extern Uint32 wakeup_on_mpv_render_update, wakeup_on_mpv_events;
 
 void die(const char *msg);
 
 void initialize_mpv();
 
-mpv_handle *mpv;
-mpv_render_context *mpv_gl;
+extern mpv_handle *mpv;
+extern mpv_render_context *mpv_gl;
 
-int redraw;
+extern int redraw;
 void mpv_events(SDL_Event event);
 void mpv_redraw(SDL_Window *window);
 
 void mpv_input();
 
 void mpv_play_pause();
-int position, duration;
+void mpv_seek(const char*, const char*);
+extern int position, duration;
 
-
+void set_room_link(const char*);
+void set_torrent_info(const char**);
 
 #ifdef __cplusplus
 }

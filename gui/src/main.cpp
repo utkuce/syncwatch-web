@@ -28,111 +28,9 @@
 
 #include <iostream>
 #include <string>
+#include <iostream>
+#include "interface.h"
 #include "video_player.h"
-#include <thread>
-#include <vector>
-
-float download_progress = 0.0f;
-std::string download_speed = "0 mb/s";
-std::string torrent_name = "<filename>";
-std::string torrent_peers = "<n>";
-std::string room_link = "syncwatch://room-<unique_id>";
-std::vector<std::string> peers;
-
-static void HelpMarker(const char* desc)
-{
-    ImGui::TextDisabled("(?)");
-    if (ImGui::IsItemHovered())
-    {
-        ImGui::BeginTooltip();
-        ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-        ImGui::TextUnformatted(desc);
-        ImGui::PopTextWrapPos();
-        ImGui::EndTooltip();
-    }
-}
-
-const char* seconds_to_display(int input, char* output)
-{
-    input = input % (24 * 3600); 
-    int hours = input / 3600; 
-  
-    input %= 3600; 
-    int minutes = input / 60 ; 
-  
-    input %= 60; 
-    int seconds = input; 
-
-    if (hours != 0)
-        sprintf(output, "%02d:%02d:%02d", hours, minutes, seconds);
-    else
-        sprintf(output, "%02d:%02d", minutes, seconds);
-    return output;
-}
-
-bool fullscreen = true;
-void toggle_fullscreen(SDL_Window* window)
-{
-    SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
-    fullscreen = !fullscreen;
-}
-
-void wait_stdin()
-{
-    std::string input;
-    std::cin >> input;
-    std::cout << input << std::endl;
-
-    if (input.rfind("url:", 0) == 0) 
-    {
-        std::string url = input.substr(std::string("url:").length());
-        const char *cmd[] = {"loadfile", url.c_str(), NULL};
-        mpv_command_async(mpv, 0, cmd);
-    }
-
-    if (input.rfind("torrent_progress:", 0) == 0)
-    {
-        download_progress = strtof(input.substr(std::string("torrent_progress:").length()).c_str(),0);
-    }
-
-    if (input.rfind("download_speed:", 0) == 0)
-    {
-        download_speed = input.substr(std::string("download_speed:").length()) + " mb/s" ;
-    }
-
-    if (input.rfind("torrent_name:", 0) == 0)
-    {
-        torrent_name = input.substr(std::string("torrent_name:").length());
-    }
-
-    if (input.rfind("torrent_peers:", 0) == 0)
-    {
-        torrent_peers = input.substr(std::string("torrent_peers:").length());
-    }
-
-    if (input.rfind("room_link:", 0) == 0)
-    {
-        room_link = input.substr(std::string("room_link:").length());
-    }
-
-    if (input.rfind("peer_me:", 0) == 0)
-    {
-        peers.push_back(input.substr(std::string("peer_me:").length()) + " (you)");
-    }
-
-    if (input.rfind("new_peer:", 0) == 0)
-    {
-        peers.push_back(input.substr(std::string("new_peer:").length()));
-    }
-}
-
-void mpv_input()
-{
-    while(true)
-    {
-        wait_stdin();
-    }
-}
 
 // Main code
 int main(int argc, char *argv[])
@@ -229,19 +127,15 @@ int main(int argc, char *argv[])
     //if (argc != 2)
     //    die("pass a single media file as argument");
 
-    std::thread input_thread(&mpv_input);
-  
+    if (argc == 2)
+    {
+        const char *cmd[] = {"loadfile", argv[1], NULL};
+        mpv_command_async(mpv, 0, cmd);
+    }
+
     mpv_observe_property(mpv, 0,"duration", MPV_FORMAT_INT64);
     mpv_observe_property(mpv, 0,"playback-time", MPV_FORMAT_INT64);
 
-
-    int margin = 40;
-    bool show_info_panel = true;
-
-    
-    static int slider_position;
-    static int last_mouse_motion = 0;
-    static bool show_interface = true;
 
     // Main loop
     bool done = false;
@@ -277,24 +171,20 @@ int main(int argc, char *argv[])
 
                 if (event.key.keysym.sym == SDLK_ESCAPE) {
                     SDL_SetWindowFullscreen(window, 0);
-                    fullscreen = false;
+                    set_fullscreen(false);
                 }
 
                 if (event.key.keysym.sym == SDLK_RIGHT) {
-                    std::cout << "seeking forward" << std::endl;
-                    const char *seek[] = {"seek", "10", "relative", NULL};
-                    mpv_command_async(mpv, 0, seek);
+                    mpv_seek("10", "relative");
                 }
 
                 if (event.key.keysym.sym == SDLK_LEFT) {
-                    std::cout << "seeking backwards" << std::endl;
-                    const char *seek[] = {"seek", "-10", "relative", NULL};
-                    mpv_command_async(mpv, 0, seek);
+                    mpv_seek("-10", "relative");
                 }
             }
 
             if (event.type == SDL_MOUSEMOTION) {
-                last_mouse_motion = event.motion.timestamp;
+                set_last_mouse_motion(event.motion.timestamp);
                 //std::cout << "Mouse moting event: " << last_mouse_motion << std::endl;
             }
 
@@ -303,7 +193,7 @@ int main(int argc, char *argv[])
 
         // if mouse is hovered over a ui component or 
         // it's been less than 2 seconds since the last mouse motion
-        show_interface = io.WantCaptureMouse || SDL_GetTicks() - last_mouse_motion < 2000;
+        
 
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
@@ -315,158 +205,9 @@ int main(int argc, char *argv[])
         style.ItemSpacing = ImVec2(8,12);
         style.FramePadding = ImVec2(14,3);
 
-        //ImGui::ShowDemoWindow();
-        SDL_ShowCursor(show_interface);
+        
 
-        if (show_info_panel && show_interface)
-        {
-            ImGui::SetNextWindowPos(ImVec2(margin, margin));
-            ImGui::SetNextItemWidth(350);
-            ImGui::Begin("Info", 0, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize);
-
-            ImGui::Separator();
-
-            ImGui::Text("Room invite link");
-            ImGui::Text(room_link.c_str());
-            if (ImGui::Button("Copy to clipboard"))
-            {
-                ImGui::LogToClipboard();
-                ImGui::LogText(room_link.c_str());
-                ImGui::LogFinish();
-            }
-
-            ImGui::Separator();
-
-            ImGui::Text("Video source");
-
-            static char str1[1024] = "";
-            ImGui::InputTextWithHint("", "Enter magnet link or url", str1, IM_ARRAYSIZE(str1));
-            ImGui::SameLine(); 
-            if (ImGui::Button("Stream")) 
-            {
-                // send to parent process
-                std::cout << "source:" << str1 << std::endl;
-            }
-
-            ImGui::SameLine(); 
-            HelpMarker("Enter a magnet link or a video url (youtube etc.)\nA complete list of supported sources can be found on\nhttps://ytdl-org.github.io/youtube-dl/supportedsites.html");
-
-            ImGui::Text("Downloading");
-            ImGui::SameLine(); 
-            ImGui::TextDisabled("file (?)");
-            if (ImGui::IsItemHovered())
-            {
-                ImGui::BeginTooltip();
-                ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-                ImGui::TextUnformatted(torrent_name.c_str());
-                ImGui::PopTextWrapPos();
-                ImGui::EndTooltip();
-            }
-            ImGui::SameLine(); 
-            ImGui::Text(download_progress == 1.0f ? "" : std::string("from " + torrent_peers + " peers").c_str());
-
-            ImGui::ProgressBar(download_progress, ImVec2(0.0f,0.0f));
-            ImGui::SameLine(); 
-
-            ImGui::Text(download_progress == 1.0f ? "Done" : download_speed.c_str());
-
-            ImGui::Separator();
-
-            ImGui::Text("Connected Peers");
-            if (peers.empty())
-            {
-                ImGui::Text("None");
-            }
-            else
-            {
-                for (std::vector<std::string>::iterator it = peers.begin() ; it != peers.end(); ++it)
-                    ImGui::Text((*it).c_str());
-            }
-            
-           
-
-            ImGui::End();
-        }
-
-        if (show_interface)
-        {
-            static int volume = 0.0f;
-
-            int width, height;
-            SDL_GetWindowSize(window, &width, &height);
-            ImGui::SetNextWindowSize(ImVec2(width - margin*2, 0));
-            ImGui::SetNextWindowPos(ImVec2(margin, height - ImGui::GetTextLineHeightWithSpacing()*2 - margin));
-
-            ImGui::Begin("Media Controls", 0, ImGuiWindowFlags_NoTitleBar);
-
-            if (ImGui::Button("Play/Pause"))
-            {
-                mpv_play_pause();
-            }
-            
-            ImGui::SameLine(0, 10);
-            
-            if (ImGui::Button("Rewind 10s"))
-            {
-                std::cout << "Rewind button clicked" << std::endl;
-                const char *cmd_rewind[] = {"seek", "-10", "relative", NULL};
-                mpv_command_async(mpv, 0, cmd_rewind);
-            }
-
-            ImGui::SameLine(0, 10);
-
-            char slider_display[99], position_display[99], duration_display[99];
-            seconds_to_display(position, position_display);
-            seconds_to_display(duration, duration_display);
-            sprintf(slider_display, "%s/%s", position_display, duration_display);
-
-            ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-            if (ImGui::SliderInt("", &slider_position, 0, duration, slider_display))
-            {
-                std::cout << "Slider position: " << slider_position << std::endl;
-                const char *cmd_seek[] = {"seek", std::to_string(slider_position).c_str(), "absolute", NULL};
-                mpv_command_async(mpv, 0, cmd_seek);
-            }
-            else
-            {
-                if (ImGui::IsItemDeactivatedAfterEdit)
-                    slider_position = position;
-            }
-            
-            
-
-            ImGui::SetNextItemWidth(100);
-            if (ImGui::SliderInt("Volume", &volume, 0, 100))
-            {
-                
-            }
-
-            ImGui::SameLine(0, 10);
-
-            static bool mute;
-            ImGui::Checkbox("Mute", &mute);
-
-            ImGui::SameLine(0, 10);
-            
-            if (ImGui::Button("Fullscreen"))
-            {
-                toggle_fullscreen(window);
-            }
-
-            ImGui::SameLine(0, 10);
-            ImGui::Button("Video Source");
-            ImGui::SameLine(0, 10);
-            ImGui::Button("Join a room");
-            ImGui::SameLine(0, 10);
-            ImGui::Checkbox("Show Info Panel", &show_info_panel);
-            ImGui::SameLine(0, 10);
-            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-
-            ImGui::End();
-
-            
-
-        }
+        construct_interface(window);
 
         // Rendering
         ImGui::Render();
@@ -489,8 +230,6 @@ int main(int argc, char *argv[])
     SDL_GL_DeleteContext(gl_context);
     SDL_DestroyWindow(window);
     SDL_Quit();
-
-    input_thread.join();
 
     return 0;
 }
