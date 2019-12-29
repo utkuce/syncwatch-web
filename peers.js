@@ -144,11 +144,11 @@ function handleReceived(data) {
         case "videoState":
 
             // { "videoState": { "position": vid.currentTime, "paused": vid.paused } }
+            videoPlayer.setLastReceivedEvent(message);
 
             videoPlayer.setPause(message["videoState"]["paused"]);
             videoPlayer.setPosition(parseFloat(message["videoState"]["position"]));
 
-            //videoPlayer.setListenEvents(true);
 
             break;
 

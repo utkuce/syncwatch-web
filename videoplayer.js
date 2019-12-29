@@ -16,8 +16,16 @@ mpvPlayer.on('started', function(status) {
 
 var peers = require("./peers");
 
-var listenPauseEvents = true;
-var listenPositionEvents = true;
+function videoStateEquals(first, second) {
+  return first !== undefined && second != undefined && 
+    first["videoState"]["paused"] === second["videoState"]["paused"] &&
+    first["videoState"]["position"] === second["videoState"]["position"];
+}
+
+var lastReceivedEvent;
+exports.setLastReceivedEvent = function(message) {
+  lastReceivedEvent = message;
+};
 
 var currentSource = "";
 exports.getCurrentSource = function() {
@@ -35,36 +43,48 @@ mpvPlayer.on('stopped', function(){
 
 mpvPlayer.on('paused', function() {
 
-  if (listenPauseEvents && !firstStart) {
+  if (!firstStart) { // dont send the first pause event
 
     mpvPlayer.getProperty("time-pos").then(function(value) {
 
       lastPosEvent = value;
       console.log("video paused, position: ", value);
-      peers.sendData(JSON.stringify({ "videoState": { "position": value, "paused": true } }));
+
+      var event = { "videoState": { "position": value, "paused": true } };
+/*      
+      console.log("event: " + JSON.stringify(event));
+      console.log("lastReceivedEvent: " + JSON.stringify(lastReceivedEvent));
+      console.log("eq: ", videoStateEquals(event,lastReceivedEvent));
+*/
+      if (!videoStateEquals(event,lastReceivedEvent)) {
+        peers.sendData(JSON.stringify(event));
+      }
+
     });
   }
-  else
-  {
-    console.log("listenPauseEvents: " + listenPauseEvents + " , firstStart: " + firstStart);
-  }
 
-  listenPauseEvents = true;
   firstStart = false;
 
 });
 
 mpvPlayer.on('resumed', function() {
 
-  if (listenPauseEvents) {
 
-    mpvPlayer.getProperty("time-pos").then(function(value) {
+  mpvPlayer.getProperty("time-pos").then(function(value) {
+      
       console.log("video resumed, position: ", value);
-      peers.sendData(JSON.stringify({ "videoState": { "position": value, "paused": false } }));
-    });
-  }
 
-  listenPauseEvents = true;
+      var event = { "videoState": { "position": value, "paused": false } };
+/*     
+      console.log("event: " + JSON.stringify(event));
+      console.log("lastReceivedEvent: " + JSON.stringify(lastReceivedEvent));
+      console.log("eq: ", videoStateEquals(event,lastReceivedEvent));
+*/
+      if (!videoStateEquals(event,lastReceivedEvent)) {
+        peers.sendData(JSON.stringify(event));
+      }
+    
+    });
 
 });
 
@@ -73,17 +93,25 @@ mpvPlayer.on('seek', function(timeposition) {
 
   if (lastSeekEvent != timeposition.end) { // prevent duplicate events
 
-    if (listenPositionEvents) {
+    mpvPlayer.getProperty("pause").then(function(value) {
+        
+      console.log("video position changed: ", timeposition.end);
 
-      mpvPlayer.getProperty("pause").then(function(value) {
-        console.log("video position changed: ", timeposition.end);
-        peers.sendData(JSON.stringify({ "videoState": { "position": timeposition.end, "paused": value } }));
-      });
-    }
+      var event = { "videoState": { "position": timeposition.end, "paused": value } };
+/*      
+      console.log("event: " + JSON.stringify(event));
+      console.log("lastReceivedEvent: " + JSON.stringify(lastReceivedEvent));
+      console.log("eq: ", videoStateEquals(event,lastReceivedEvent));
+*/
+      if (!videoStateEquals(event,lastReceivedEvent)) {
+        peers.sendData(JSON.stringify(event));
+      }
+      
+    });
+    
   }
 
   lastSeekEvent = timeposition.end;
-  listenPositionEvents = true;
 
 });
 
@@ -101,8 +129,6 @@ function start(url) {
       console.log("Please wait...");
       mpvPlayer.load(url);
 
-      //childProcess.stdin.write("url:" + url + "\n");
-      //child.stdin.end(); 
     }
 }
 
