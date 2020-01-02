@@ -25,7 +25,11 @@ var uniqid = require('uniqid');
 const myPeerId = uniqid('peer-');
 process.title = "Connecting as " + myPeerId;
 
-exports.createRoom = function() {
+export function createRoom(videoSource?: string) {
+
+    if (videoSource) {
+        videoplayer.setSource(videoSource);
+    }
 
     const roomId = uniqid('room-');
 
