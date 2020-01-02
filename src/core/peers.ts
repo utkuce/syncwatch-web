@@ -1,5 +1,6 @@
 import firebase from 'firebase/app';
-import * as videoplayer from './videoplayer'
+import 'firebase/database';
+import * as videoplayer from './videoplayer';
  
 // Your web app's Firebase configuration
 var firebaseConfig = {
@@ -75,7 +76,7 @@ exports.createRoom = function() {
     });
 }
 
-exports.join = function(roomId: string) {
+export function join(roomId: string) {
 
     remotePeer = new SimplePeer({ wrtc: wrtc , trickle: false});
 
