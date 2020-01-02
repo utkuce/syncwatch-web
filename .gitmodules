@@ -1,4 +1,0 @@
-[submodule "gui/src/imgui"]
-	path = gui/src/imgui
-	url = https://github.com/ocornut/imgui.git
-	ignore = dirty

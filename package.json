@@ -1,13 +1,42 @@
 {
-    "name": "syncwatch",
-    "author": "Utku Çelik",
-    "bin": "index.js",
-    "dependencies": {
-        "firebase": "^7.5.0",
-        "get-port": "^5.1.0",
-        "node-mpv": "^1.4.3",
-        "simple-peer": "^9.6.2",
-        "uniqid": "^5.2.0",
-        "webtorrent-hybrid": "^4.0.1"
-    }
+  "name": "syncwatch-desktop",
+  "version": "0.3.0",
+  "main": "index.js",
+  "author": "Utku Çelik <utkuce@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "webpack -p",
+    "dev": "webpack --mode=development",
+    "start": "qode --inspect ./dist/index.js"
+  },
+  "dependencies": {
+    "@nodegui/nodegui": "^0.12.1",
+    "@nodegui/react-nodegui": "^0.4.0",
+    "firebase": "^7.5.0",
+    "get-port": "^5.1.0",
+    "node-mpv": "^1.4.3",
+    "react": "^16.12.0",
+    "simple-peer": "^9.6.2",
+    "uniqid": "^5.2.0",
+    "webtorrent-hybrid": "^4.0.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.7.7",
+    "@babel/preset-env": "^7.7.7",
+    "@babel/preset-react": "^7.7.4",
+    "@babel/preset-typescript": "^7.7.7",
+    "@nodegui/packer": "^1.1.2",
+    "@types/node": "^12.12.22",
+    "@types/react": "^16.9.17",
+    "@types/webpack-env": "^1.14.1",
+    "babel-loader": "^8.0.6",
+    "clean-webpack-plugin": "^3.0.0",
+    "file-loader": "^5.0.2",
+    "fork-ts-checker-webpack-plugin": "^3.1.1",
+    "node-loader": "^0.6.0",
+    "typescript": "^3.7.4",
+    "webpack": "^4.41.4",
+    "webpack-cli": "^3.3.10"
+  }
 }

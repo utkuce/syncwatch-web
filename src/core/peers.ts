@@ -1,6 +1,5 @@
-var firebase = require('firebase/app');
-require('firebase/auth');
-require('firebase/database');
+import firebase from 'firebase/app';
+import * as videoplayer from './videoplayer'
  
 // Your web app's Firebase configuration
 var firebaseConfig = {
@@ -19,7 +18,7 @@ firebase.initializeApp(firebaseConfig);
 var SimplePeer = require('simple-peer');
 var wrtc = require('wrtc');
 
-var remotePeer; // TODO: make it an array for one to many connection
+var remotePeer : any; // TODO: make it an array for one to many connection
 
 var uniqid = require('uniqid');
 const myPeerId = uniqid('peer-');
@@ -45,15 +44,15 @@ exports.createRoom = function() {
     console.log("Creating room");
     console.log("Join link: " + roomLink);
 
-    videoPlayer.setRoomInfo(roomLink);
+    //videoplayer.setRoomInfo(roomLink);
     
-    remotePeer.on('signal', data => {
+    remotePeer.on('signal', (data: string) => {
 
         //console.log('SIGNAL', JSON.stringify(data));
     
         // add yourself to the room with your signaling data
         firebase.database().ref(roomId + "/" + myPeerId).push(data);
-        videoPlayer.setNewPeer(myPeerId + " (you)");
+        //videoplayer.setNewPeer(myPeerId + " (you)");
 
         // and attempt to read others' signaling data
         readPeerSignals(roomId);
@@ -62,21 +61,21 @@ exports.createRoom = function() {
     remotePeer.on('connect', () => {
 
         remotePeer.send(JSON.stringify({'info': 'Connection established'}));
-        remotePeer.send(JSON.stringify({ "sourceURL": videoPlayer.getCurrentSource()}));
+        remotePeer.send(JSON.stringify({ "sourceURL": videoplayer.getCurrentSource()}));
         
         // wait for 'connect' event before using the data channel
         console.log("Connected to peer");
         //remotePeer.send('hey, how is it going?');
     });
 
-    remotePeer.on('data', data => {
+    remotePeer.on('data', (data: string) => {
         // got a data channel message
         console.log('got a message: ' + data);
         handleReceived(data);
     });
 }
 
-exports.join = function(roomId) {
+exports.join = function(roomId: string) {
 
     remotePeer = new SimplePeer({ wrtc: wrtc , trickle: false});
 
@@ -84,16 +83,16 @@ exports.join = function(roomId) {
     console.log("Reading signal data of peers in the room");
     
     // and add yourself to the room with your signaling data
-    remotePeer.on('signal', data => {
+    remotePeer.on('signal', (data: string) => {
  
         //peer2.signal(data);
         // adding it to the database acts as signaling assuming other peer 
         // will read it immediately and call signal on itself
         firebase.database().ref(roomId + "/" + myPeerId).push(data);  
-        videoPlayer.setNewPeer(myPeerId + " (you)");
+        //videoplayer.setNewPeer(myPeerId + " (you)");
     });
 
-    remotePeer.on('data', data => {
+    remotePeer.on('data', (data: string) => {
         // got a data channel message
         console.log('got a message: ' + data);
         handleReceived(data);
@@ -103,7 +102,7 @@ exports.join = function(roomId) {
     readPeerSignals(roomId);
 }
 
-function readPeerSignals(roomId) {
+function readPeerSignals(roomId: string) {
 
     var roomRef = firebase.database().ref(roomId);
     roomRef.on("child_added", function(peer, prevChildKey) {
@@ -122,7 +121,7 @@ function readPeerSignals(roomId) {
                 //console.log(signalData.val() , "\n");
                 remotePeer.signal(signalData.val()); 
 
-                videoPlayer.setNewPeer(peer.key);
+                //videoplayer.setNewPeer(peer.key);
 
             });  
         } else {
@@ -132,15 +131,14 @@ function readPeerSignals(roomId) {
     });
 }
 
-exports.sendData = function(data) {
+exports.sendData = function(data: string) {
 
     console.log("Sending data: " + data);
     remotePeer.send(data);
 }
 
-var videoPlayer = require('./videoplayer.js');
 
-function handleReceived(data) {
+function handleReceived(data: string) {
 
     var message = JSON.parse(data);
     var messageType = Object.keys(message)[0];
@@ -150,10 +148,10 @@ function handleReceived(data) {
         case "videoState":
 
             // { "videoState": { "position": vid.currentTime, "paused": vid.paused } }
-            videoPlayer.setLastReceivedEvent(message);
+            videoplayer.setLastReceivedEvent(message);
 
-            videoPlayer.setPause(message["videoState"]["paused"]);
-            videoPlayer.setPosition(parseFloat(message["videoState"]["position"]));
+            videoplayer.setPause(message["videoState"]["paused"]);
+            videoplayer.setPosition(parseFloat(message["videoState"]["position"]));
 
 
             break;
@@ -161,7 +159,7 @@ function handleReceived(data) {
         case "sourceURL":
 
             // { "sourceURL": url}
-            videoPlayer.start(message["sourceURL"]);
+            videoplayer.start(message["sourceURL"]);
             
             break;
 

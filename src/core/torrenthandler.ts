@@ -1,13 +1,19 @@
 const WebTorrent = require('webtorrent-hybrid');
 var client = new WebTorrent();
 
-var videoPlayer = require('./videoplayer.js');
+import * as videoplayer from './videoplayer'
+
 var streamPort;
 exports.port = streamPort;
 
-exports.start = function(magnetURI) {
+var downloadInfo = "";
+export function getDownloadInfo() {
+  return downloadInfo;
+}
 
-    client.add(magnetURI, function (torrent) {
+export function start(magnetURI: string) {
+
+    client.add(magnetURI, function (torrent: any) {
       // create HTTP server for this torrent
       var server = torrent.createServer();
 
@@ -22,41 +28,33 @@ exports.start = function(magnetURI) {
         var interval = setInterval(function () {
           //console.clear();
 
-          var downloadInfo = torrent.name + " (Downloading: " + (torrent.progress * 100).toFixed(1) + "%" 
+          var ETA : string = (torrent.timeRemaining/60000).toFixed(2) + " minutes";
+          if (torrent.timeRemaining < 60000) {
+            ETA = Math.floor(torrent.timeRemaining/1000) + " seconds"
+          }
+
+          downloadInfo = torrent.name + " (Downloading: " + (torrent.progress * 100).toFixed(1) + "%" 
           + " - " + (torrent.downloadSpeed / Math.pow(10,6)).toFixed(2)  + " mb/s "
           + " from " + torrent.numPeers + " peer(s)"
-          + " ETA: " + (torrent.timeRemaining/60000).toFixed(2) + " minutes)";
+          + " ETA: " + ETA + " )";
 
-          videoPlayer.setTorrentInfo(
-            torrent.name,
-            torrent.progress,
-            (torrent.downloadSpeed / Math.pow(10,6)).toFixed(2)  + " mb/s ",
-            (torrent.timeRemaining/60000).toFixed(2) + " minutes)",
-            torrent.numPeers
-          );
+          //ideoPlayer.oscMessage(downloadInfo);
 
           //console.log(downloadInfo);
-          //videoPlayer.setTitle(downloadInfo);
+          videoplayer.setTitle(downloadInfo);
       
-        }, 1000);
+        }, 200);
       
         torrent.on("done", function () {
             
-          console.log(torrent.name + " (Download complete)");
+          downloadInfo = torrent.name + " (Download complete)";
+          console.log(downloadInfo);
+          videoplayer.setTitle(downloadInfo);
 
-          videoPlayer.setTorrentInfo(
-            torrent.name,
-            1.0,
-            (torrent.downloadSpeed / Math.pow(10,6)).toFixed(2)  + " mb/s ",
-            (torrent.timeRemaining/60000).toFixed(2) + " minutes)",
-            torrent.numPeers
-          );
-
-          //videoPlayer.setTitle(torrent.name + " (Download complete)");
           clearInterval(interval);
         });
       
-        torrent.on('error', function (err) {
+        torrent.on('error', function (err: any) {
             console.log(err);
         });
       
@@ -65,7 +63,7 @@ exports.start = function(magnetURI) {
         // access individual files at http://localhost:<port>/<index> where index is the index
         // in the torrent.files array
       
-        videoPlayer.start("http://localhost:" + streamPort + "/0"); // TODO: fix video file index
+        videoplayer.start("http://localhost:" + streamPort + "/0"); // TODO: fix video file index
          
         // later, cleanup...
       

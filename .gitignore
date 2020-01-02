@@ -1,11 +1,5 @@
 node_modules
-*.exe
 dist/
-*.dll
-*.cmake
-CMakeCache.txt
-CMakeFiles/
-Makefile
-imgui.ini
-.vscode
-bin
+deploy/
+*.log
+*.exe
