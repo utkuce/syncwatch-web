@@ -3,15 +3,7 @@ import React from "react";
 import App from "./app";
 
 import * as peers from "./core/peers"
-
-process.title = "Syncwatch";
-Renderer.render(<App />);
-// This is for hot reloading (this will be stripped off in production by webpack)
-if (module.hot) {
-  module.hot.accept(["./app"], function() {
-    Renderer.forceUpdate();
-  });
-}
+import * as videoplayer from "./core/videoplayer"
 
 // if started with a join link join a room
 if (process.argv[2]) {
@@ -24,7 +16,8 @@ if (process.argv[2]) {
   }
 
   if (process.argv[2].startsWith("magnet:")) {
-    peers.createRoom(process.argv[2]);
+    videoplayer.setSource(process.argv[2]);
+    peers.createRoom();
   }
 
 } else { // else create your own room
@@ -32,4 +25,13 @@ if (process.argv[2]) {
   peers.createRoom();
 
   //process.exit();
+}
+
+process.title = "Syncwatch";
+Renderer.render(<App />);
+// This is for hot reloading (this will be stripped off in production by webpack)
+if (module.hot) {
+  module.hot.accept(["./app"], function() {
+    Renderer.forceUpdate();
+  });
 }

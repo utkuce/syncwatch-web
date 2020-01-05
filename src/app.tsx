@@ -1,8 +1,11 @@
 import { Text, Window, hot, View } from "@nodegui/react-nodegui";
 import React from "react";
-import { URLInput } from "./components";
+import { Components } from "./components";
 
-const minSize = { width: 500, height: 520 };
+export var componentsRef = React.createRef<Components>();
+ 
+
+const minSize = { width: 0, height: 450 };
 class App extends React.Component {
   render() {
     return (
@@ -14,7 +17,7 @@ class App extends React.Component {
       >
         <View style={containerStyle}>
           <Text id="welcome-text">Welcome to Syncwatch 🖥️</Text>
-          <URLInput />
+          <Components ref={componentsRef}/>
         </View>
       </Window>
     );
@@ -23,6 +26,8 @@ class App extends React.Component {
 
 const containerStyle = `
   flex: 1; 
+  padding-horizontal: 20px;
+  padding-bottom: 20px;
 `;
 
 const styleSheet = `
@@ -31,6 +36,7 @@ const styleSheet = `
     padding-top: 20px;
     qproperty-alignment: 'AlignHCenter';
     font-family: 'sans-serif';
+    padding-horizontal: 10px;
   }
 
   #step-1, #step-2 {

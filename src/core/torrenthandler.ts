@@ -2,14 +2,12 @@ const WebTorrent = require('webtorrent-hybrid');
 var client = new WebTorrent();
 
 import * as videoplayer from './videoplayer'
+import * as app from '../app'
 
 var streamPort;
 exports.port = streamPort;
 
-var downloadInfo = "";
-export function getDownloadInfo() {
-  return downloadInfo;
-}
+export var downloadInfo = "";
 
 export function start(magnetURI: string) {
 
@@ -33,10 +31,13 @@ export function start(magnetURI: string) {
             ETA = Math.floor(torrent.timeRemaining/1000) + " seconds"
           }
 
-          downloadInfo = torrent.name + " (Downloading: " + (torrent.progress * 100).toFixed(1) + "%" 
+          downloadInfo = torrent.name + "(" + (torrent.progress * 100).toFixed(1) + "%" 
           + " - " + (torrent.downloadSpeed / Math.pow(10,6)).toFixed(2)  + " mb/s "
           + " from " + torrent.numPeers + " peer(s)"
           + " ETA: " + ETA + " )";
+
+          if (app.componentsRef.current != null)
+            app.componentsRef.current.setDownloadState();
 
           //ideoPlayer.oscMessage(downloadInfo);
 
@@ -48,6 +49,10 @@ export function start(magnetURI: string) {
         torrent.on("done", function () {
             
           downloadInfo = torrent.name + " (Download complete)";
+
+          if (app.componentsRef.current != null)
+            app.componentsRef.current.setDownloadState();
+
           console.log(downloadInfo);
           videoplayer.setTitle(downloadInfo);
 

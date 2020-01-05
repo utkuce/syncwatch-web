@@ -1,7 +1,7 @@
 import firebase from 'firebase/app';
 import 'firebase/database';
 import * as videoplayer from './videoplayer';
- 
+
 // Your web app's Firebase configuration
 var firebaseConfig = {
     apiKey: "AIzaSyB2sMd7L_8oJnU4e1xaweqBR_UyQlRoxrM",
@@ -25,11 +25,8 @@ var uniqid = require('uniqid');
 const myPeerId = uniqid('peer-');
 process.title = "Connecting as " + myPeerId;
 
-export function createRoom(videoSource?: string) {
-
-    if (videoSource) {
-        videoplayer.setSource(videoSource);
-    }
+export var roomLink: string = "not_set";
+export function createRoom() {
 
     const roomId = uniqid('room-');
 
@@ -45,7 +42,8 @@ export function createRoom(videoSource?: string) {
             }
         });
 
-    var roomLink = "syncwatch://" + roomId;
+    roomLink = "syncwatch://" + roomId;
+ 
     console.log("Creating room");
     console.log("Join link: " + roomLink);
 
@@ -78,6 +76,8 @@ export function createRoom(videoSource?: string) {
         console.log('got a message: ' + data);
         handleReceived(data);
     });
+
+    return roomLink;
 }
 
 export function join(roomId: string) {
