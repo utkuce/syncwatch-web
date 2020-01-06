@@ -8,6 +8,21 @@ module.exports = (env, argv) => {
     mode: "production",
     entry: ["./src/index.tsx"],
     target: "node",
+    externals: [
+      function (context, request, callback) {
+        if (/grpc/.test(request)) {
+          return callback(null, 'commonjs ' + request);
+        }
+  
+        callback();
+    },
+    function (context, request, callback) {
+      if (/@firebase/.test(request)) {
+        return callback(null, 'commonjs ' + request);
+      }
+
+      callback();
+  }],
     output: {
       path: path.resolve(__dirname, "dist"),
       filename: "index.js"
@@ -38,6 +53,7 @@ module.exports = (env, argv) => {
     },
     plugins: [],
     resolve: {
+      mainFields: ['main'],
       extensions: [".tsx", ".ts", ".js", ".jsx", ".json"]
     }
   };

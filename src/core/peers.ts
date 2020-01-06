@@ -1,6 +1,9 @@
-import firebase from 'firebase/app';
-import 'firebase/database';
+import * as firebase from 'firebase/app'
+import 'firebase/auth'
+import 'firebase/database'
+
 import * as videoplayer from './videoplayer';
+import * as app from '../app'
 
 // Your web app's Firebase configuration
 var firebaseConfig = {
@@ -14,7 +17,6 @@ var firebaseConfig = {
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-
 
 var SimplePeer = require('simple-peer');
 var wrtc = require('wrtc');
@@ -54,8 +56,17 @@ export function createRoom() {
         //console.log('SIGNAL', JSON.stringify(data));
     
         // add yourself to the room with your signaling data
-        firebase.database().ref(roomId + "/" + myPeerId).push(data);
-        //videoplayer.setNewPeer(myPeerId + " (you)");
+        firebase.database().ref(roomId + "/" + myPeerId).push(data, 
+            
+            function(error: any){
+                if (error) {
+                    console.error(error)
+                    return
+                }
+                console.log('Push successful')
+                setNewPeer(myPeerId + " (you)");
+            }
+        );
 
         // and attempt to read others' signaling data
         readPeerSignals(roomId);
@@ -85,6 +96,7 @@ export function join(roomId: string) {
     remotePeer = new SimplePeer({ wrtc: wrtc , trickle: false});
 
     console.log("Joining room: " + roomId);
+    roomLink = "syncwatch://" + roomId;
     console.log("Reading signal data of peers in the room");
     
     // and add yourself to the room with your signaling data
@@ -93,8 +105,17 @@ export function join(roomId: string) {
         //peer2.signal(data);
         // adding it to the database acts as signaling assuming other peer 
         // will read it immediately and call signal on itself
-        firebase.database().ref(roomId + "/" + myPeerId).push(data);  
-        //videoplayer.setNewPeer(myPeerId + " (you)");
+        firebase.database().ref(roomId + "/" + myPeerId).push(data, 
+            
+            function(error: any){
+                if (error) {
+                    console.error(error)
+                    return
+                }
+                console.log('Push successful')
+                setNewPeer(myPeerId + " (you)");
+            }
+        );
     });
 
     remotePeer.on('data', (data: string) => {
@@ -110,7 +131,7 @@ export function join(roomId: string) {
 function readPeerSignals(roomId: string) {
 
     var roomRef = firebase.database().ref(roomId);
-    roomRef.on("child_added", function(peer, prevChildKey) {
+    roomRef.on("child_added", function(peer: any, prevChildKey: any) {
         
         
         console.log("Child added for " + peer.key);
@@ -121,12 +142,12 @@ function readPeerSignals(roomId: string) {
 
             //console.log(peer.val());
             // signaling data comes as json array
-            peer.forEach(function(signalData) { 
+            peer.forEach(function(signalData: any) { 
                 console.log("Adding signaling data for " + peer.key);
                 //console.log(signalData.val() , "\n");
                 remotePeer.signal(signalData.val()); 
 
-                //videoplayer.setNewPeer(peer.key);
+                setNewPeer(peer.key);
 
             });  
         } else {
@@ -169,4 +190,22 @@ function handleReceived(data: string) {
             break;
 
     }
+}
+
+var peersList = []
+export var connectedDisplay = "None";
+function setNewPeer(peerInfo: string | null) {
+
+    if (peerInfo != null ) {
+
+        if (connectedDisplay === "None")
+            connectedDisplay = "";
+
+        peersList.push(peerInfo);
+        connectedDisplay += peerInfo + "\n";
+
+        if (app.componentsRef.current != null)
+            app.componentsRef.current.setPeersSTate();
+    }
+
 }
