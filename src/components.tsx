@@ -13,16 +13,23 @@ const urlbox = React.createRef<QLineEdit>();
 const copyButton = React.createRef<QPushButton>();
 const streamButton = React.createRef<QPushButton>();
 
-export class Components extends React.Component<{}, { downloadInfo: string }>{
+export class Components extends React.Component<{}, { downloadInfo: string, peersInfo: string }>{
 
   
   constructor(props: any) {
     super(props);
-    this.state = { downloadInfo: props.downloadInfo}
+    this.state = { 
+      downloadInfo: torrenthandler.downloadInfo,
+      peersInfo : peers.connectedDisplay
+    }
   }
 
   setDownloadState() {
     this.setState({downloadInfo: torrenthandler.downloadInfo});
+  }
+
+  setPeersSTate() {
+    this.setState({peersInfo: peers.connectedDisplay})
   }
 
   componentDidMount() {
@@ -78,7 +85,7 @@ export class Components extends React.Component<{}, { downloadInfo: string }>{
         </View>
 
         <Text style={titleStyle}>Connected Peers</Text>
-        <Text>{peersList}</Text>
+        <Text>{peers.connectedDisplay}</Text>
 
       </View>
     );
