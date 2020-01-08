@@ -75,7 +75,9 @@ export function createRoom() {
     remotePeer.on('connect', () => {
 
         remotePeer.send(JSON.stringify({'info': 'Connection established'}));
-        remotePeer.send(JSON.stringify({ "sourceURL": videoplayer.getCurrentSource()}));
+
+        if (videoplayer.getCurrentSource() !== "")
+            remotePeer.send(JSON.stringify({ "sourceURL": videoplayer.getCurrentSource()}));
         
         // wait for 'connect' event before using the data channel
         console.log("Connected to peer");
