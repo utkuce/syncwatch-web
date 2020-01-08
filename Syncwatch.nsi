@@ -7,9 +7,9 @@
 !define APP_NAME "Syncwatch"
 !define COMP_NAME "utku"
 !define VERSION "0.0.1.0"
-!define COPYRIGHT "Utku �elik  � 2019"
+!define COPYRIGHT "Utku Çelik © 2020"
 !define DESCRIPTION "Watch together"
-!define INSTALLER_NAME ".\dist\syncwatch-0.1.1.exe"
+!define INSTALLER_NAME "syncwatch-0.3.0.exe"
 !define MAIN_APP_EXE "syncwatch.exe"
 !define INSTALL_TYPE "SetShellVarContext current"
 !define REG_ROOT "HKCU"
@@ -76,10 +76,8 @@ Section -MainProgram
 ${INSTALL_TYPE}
 SetOverwrite ifnewer
 SetOutPath "$INSTDIR"
-File ".\dist\mpv.exe"
-File ".\dist\syncwatch.exe"
-File ".\dist\youtube-dl.exe"
-File ".\dist\wrtc.node"
+File /r ".\deploy\win32\build\Syncwatch\*"
+File /r ".\node_modules"
 
 WriteRegStr HKCR "Syncwatch" "" "URL:Syncwatch Protocol"
 WriteRegStr HKCR "Syncwatch" "URL Protocol" ""
@@ -131,16 +129,12 @@ SectionEnd
 
 Section Uninstall
 ${INSTALL_TYPE}
-Delete "$INSTDIR\mpv.exe"
-Delete "$INSTDIR\syncwatch.exe"
-Delete "$INSTDIR\youtube-dl.exe"
-Delete "$INSTDIR\wrtc.node"
-Delete "$INSTDIR\uninstall.exe"
+Delete "$INSTDIR\*"
 !ifdef WEB_SITE
 Delete "$INSTDIR\${APP_NAME} website.url"
 !endif
 
-RmDir "$INSTDIR"
+RmDir /r "$INSTDIR"
 
 !ifdef REG_START_MENU
 !insertmacro MUI_STARTMENU_GETFOLDER "Application" $SM_Folder
