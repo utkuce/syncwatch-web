@@ -46,6 +46,7 @@ mpvPlayer.on('quit', function() {
 });
 
 var lastEventSent: Object;
+
 mpvPlayer.on('paused', function() {
 
   if (!firstStart) { // dont send the first pause event
@@ -88,28 +89,22 @@ mpvPlayer.on('resumed', function() {
 
 });
 
-var lastSeekEvent =  "";
 mpvPlayer.on('seek', function(timeposition: any) {
 
-  if (lastSeekEvent != timeposition.end) { // prevent duplicate events
 
-    mpvPlayer.getProperty("pause").then(function(value: Boolean) {
+  mpvPlayer.getProperty("pause").then(function(value: Boolean) {
         
-      console.log("video position changed: ", timeposition.end);
+    console.log("video position changed: ", timeposition.end);
 
-      var event = { "videoState": { "position": timeposition.end, "paused": value } };
+    var event = { "videoState": { "position": timeposition.end, "paused": value } };
 
-      // dont send back received event and prevent duplicates
-      if (!videoStateEquals(event,lastReceivedEvent) && !videoStateEquals(event,lastEventSent)) {
-        peers.sendData(JSON.stringify(event));
-        lastEventSent = event;
-      }
+    // dont send back received event and prevent duplicates
+    if (!videoStateEquals(event,lastReceivedEvent) && !videoStateEquals(event,lastEventSent)) {
+      peers.sendData(JSON.stringify(event));
+      lastEventSent = event;
+    }
       
-    });
-    
-  }
-
-  lastSeekEvent = timeposition.end;
+  });
 
 });
 
