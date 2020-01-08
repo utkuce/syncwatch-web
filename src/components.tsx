@@ -45,7 +45,7 @@ export class Components extends React.Component<{}, { downloadInfo: string, peer
       streamButton.current.addEventListener("clicked", () => {
         console.log("stream button clicked");
         if (urlbox.current != null && urlbox.current.text() != "")
-          videoplayer.start(urlbox.current.text()!);
+          videoplayer.setSource(urlbox.current.text()!);
       });
     }
   }
