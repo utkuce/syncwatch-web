@@ -38,8 +38,6 @@ function videoStateEquals(first: any, second: any) {
     first["videoState"]["position"] === second["videoState"]["position"];
 }
 
-
-
 mpvPlayer.on('quit', function() {
   console.log("Player quit");
   process.exit();
@@ -53,9 +51,9 @@ mpvPlayer.on('paused', function() {
 
     mpvPlayer.getProperty("time-pos").then(function(value: Number) {
 
-      console.log("video paused, position: ", value);
-
-      var event = { "videoState": { "position": value, "paused": true } };
+      var newPos = value.toFixed(2); 
+      console.log("video paused, position: ", newPos);
+      var event = { "videoState": { "position": newPos, "paused": true } };
 
       // dont send back received event and prevent duplicates
       if (!videoStateEquals(event,lastReceivedEvent) && !videoStateEquals(event,lastEventSent)) {
@@ -75,17 +73,17 @@ mpvPlayer.on('resumed', function() {
 
   mpvPlayer.getProperty("time-pos").then(function(value: Number) {
       
-      console.log("video resumed, position: ", value);
+    var newPos = value.toFixed(2); 
+    console.log("video resumed, position: ", newPos);
+    var event = { "videoState": { "position": newPos, "paused": false } };
 
-      var event = { "videoState": { "position": value, "paused": false } };
-
-      // dont send back received event and prevent duplicates
-      if (!videoStateEquals(event,lastReceivedEvent) && !videoStateEquals(event,lastEventSent)) {
-        peers.sendData(JSON.stringify(event));
-        lastEventSent = event;
-      }
+    // dont send back received event and prevent duplicates
+    if (!videoStateEquals(event,lastReceivedEvent) && !videoStateEquals(event,lastEventSent)) {
+      peers.sendData(JSON.stringify(event));
+      lastEventSent = event;
+    }
     
-    });
+  });
 
 });
 
@@ -94,9 +92,9 @@ mpvPlayer.on('seek', function(timeposition: any) {
 
   mpvPlayer.getProperty("pause").then(function(value: Boolean) {
         
-    console.log("video position changed: ", timeposition.end);
-
-    var event = { "videoState": { "position": timeposition.end, "paused": value } };
+    var newPos = timeposition.end.toFixed(2); 
+    console.log("video position changed: ", newPos);
+    var event = { "videoState": { "position": newPos, "paused": value } };
 
     // dont send back received event and prevent duplicates
     if (!videoStateEquals(event,lastReceivedEvent) && !videoStateEquals(event,lastEventSent)) {

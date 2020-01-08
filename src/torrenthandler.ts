@@ -2,7 +2,6 @@ const WebTorrent = require('webtorrent-hybrid');
 var client = new WebTorrent();
 
 import * as videoplayer from './videoplayer'
-import * as app from '../app'
 
 var streamPort;
 exports.port = streamPort;
@@ -36,9 +35,6 @@ export function start(magnetURI: string) {
           + " from " + torrent.numPeers + " peer(s)"
           + " ETA: " + ETA + " )";
 
-          if (app.componentsRef.current != null)
-            app.componentsRef.current.setDownloadState();
-
           //ideoPlayer.oscMessage(downloadInfo);
 
           //console.log(downloadInfo);
@@ -49,9 +45,6 @@ export function start(magnetURI: string) {
         torrent.on("done", function () {
             
           downloadInfo = torrent.name + " (Download complete)";
-
-          if (app.componentsRef.current != null)
-            app.componentsRef.current.setDownloadState();
 
           console.log(downloadInfo);
           videoplayer.setTitle(downloadInfo);

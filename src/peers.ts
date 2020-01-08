@@ -3,7 +3,6 @@ import 'firebase/auth'
 import 'firebase/database'
 
 import * as videoplayer from './videoplayer';
-import * as app from '../app'
 
 // Your web app's Firebase configuration
 var firebaseConfig = {
@@ -206,8 +205,5 @@ function setNewPeer(peerInfo: string | null) {
         peersList.push(peerInfo);
         connectedDisplay += peerInfo + "\n";
 
-        if (app.componentsRef.current != null)
-            app.componentsRef.current.setPeersSTate();
     }
-
 }

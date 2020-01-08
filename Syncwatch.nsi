@@ -9,7 +9,7 @@
 !define VERSION "0.0.1.0"
 !define COPYRIGHT "Utku Çelik © 2020"
 !define DESCRIPTION "Watch together"
-!define INSTALLER_NAME "syncwatch-0.3.0.exe"
+!define INSTALLER_NAME "syncwatch-0.4.0.exe"
 !define MAIN_APP_EXE "syncwatch.exe"
 !define INSTALL_TYPE "SetShellVarContext current"
 !define REG_ROOT "HKCU"
@@ -76,8 +76,7 @@ Section -MainProgram
 ${INSTALL_TYPE}
 SetOverwrite ifnewer
 SetOutPath "$INSTDIR"
-File /r ".\deploy\win32\build\Syncwatch\*"
-File /r ".\node_modules"
+File /r ".\deploy\"
 
 WriteRegStr HKCR "Syncwatch" "" "URL:Syncwatch Protocol"
 WriteRegStr HKCR "Syncwatch" "URL Protocol" ""
