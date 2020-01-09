@@ -1,10 +1,8 @@
 const WebTorrent = require('webtorrent-hybrid');
 var client = new WebTorrent();
-
 import * as videoplayer from './videoplayer'
 
-var streamPort;
-exports.port = streamPort;
+var streamPort: number;
 
 export var downloadInfo = "";
 
@@ -18,12 +16,21 @@ export function start(magnetURI: string) {
 
       (async () => {
         streamPort = await getPort();
-        console.log("Starting server on port " + streamPort);
+        console.log("Starting htpp server on port " + streamPort);
         server.listen(streamPort); // start the server listening to a port
 
+        console.log("Searching torrent contents");
+        torrent.files.forEach(function (file: any, index: number) {
+          //console.log(file.name);
+          var ext = file.name.substr(file.name.lastIndexOf('.') + 1);
+          var videoExtensions = require('video-extensions');
+          if (videoExtensions.includes(ext)) {
+            console.log("Found video file at index " + index);
+            videoplayer.start("http://localhost:" + streamPort + "/" + index);
+          }
+        });
 
         var interval = setInterval(function () {
-          //console.clear();
 
           var ETA : string = (torrent.timeRemaining/60000).toFixed(2) + " minutes";
           if (torrent.timeRemaining < 60000) {
@@ -32,15 +39,13 @@ export function start(magnetURI: string) {
 
           downloadInfo = torrent.name + "(" + (torrent.progress * 100).toFixed(1) + "%" 
           + " - " + (torrent.downloadSpeed / Math.pow(10,6)).toFixed(2)  + " mb/s "
-          + " from " + torrent.numPeers + " peer(s)"
-          + " ETA: " + ETA + " )";
-
-          //ideoPlayer.oscMessage(downloadInfo);
+          + " - " + torrent.numPeers + " peer(s)"
+          + " - ETA: " + ETA + " )";
 
           //console.log(downloadInfo);
           videoplayer.setTitle(downloadInfo);
       
-        }, 200);
+        }, 200); // every 200 ms
       
         torrent.on("done", function () {
             
@@ -61,7 +66,6 @@ export function start(magnetURI: string) {
         // access individual files at http://localhost:<port>/<index> where index is the index
         // in the torrent.files array
       
-        videoplayer.start("http://localhost:" + streamPort + "/0"); // TODO: fix video file index
          
         // later, cleanup...
       
