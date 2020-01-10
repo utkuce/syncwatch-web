@@ -3,19 +3,10 @@ import 'firebase/auth'
 import 'firebase/database'
 
 import * as videoplayer from './videoplayer';
+import config from './config';
 
-// Your web app's Firebase configuration
-var firebaseConfig = {
-    apiKey: "AIzaSyB2sMd7L_8oJnU4e1xaweqBR_UyQlRoxrM",
-    authDomain: "syncwatch-539db.firebaseapp.com",
-    databaseURL: "https://syncwatch-539db.firebaseio.com",
-    projectId: "syncwatch-539db",
-    storageBucket: "syncwatch-539db.appspot.com",
-    messagingSenderId: "917047984813",
-    appId: "1:917047984813:web:c8263931b4178a1f6dbc24"
-};
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(config.firebase);
 
 var SimplePeer = require('simple-peer');
 var wrtc = require('wrtc');
@@ -36,10 +27,7 @@ export function createRoom() {
             trickle:false ,  
             wrtc: wrtc,
             config: { 
-                iceServers: [
-                    { urls: 'stun:stun.l.google.com:19302' }, 
-                    { urls: 'stun:global.stun.twilio.com:3478?transport=tcp' }
-                ] 
+                iceServers: config.iceServers
             }
         });
 

@@ -1,0 +1,24 @@
+var config : any = {
+
+    firebase: {
+        apiKey: "...",
+        authDomain: "....firebaseapp.com",
+        databaseURL: "https://....firebaseio.com",
+        projectId: "...",
+        storageBucket: "....appspot.com",
+        messagingSenderId: "...",
+        appId: "..."
+    },
+
+    iceServers: [{
+        urls: [ "stun:..." ]
+     }, {
+        username: "...",
+        credential: "...",
+        urls: [
+            "turn:...",
+        ]
+     }]
+}
+
+export default config;

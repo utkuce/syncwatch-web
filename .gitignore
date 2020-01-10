@@ -3,3 +3,4 @@ dist/
 deploy/
 *.log
 *.exe
+config.ts
