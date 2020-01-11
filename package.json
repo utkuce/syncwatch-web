@@ -19,10 +19,7 @@
     "webtorrent-hybrid": "^4.0.1"
   },
   "devDependencies": {
-    "cp-file": "^7.0.0",
     "cpy": "^8.0.0",
-    "fs-extra": "^8.1.0",
-    "ncp": "^2.0.0",
     "pkg": "^4.4.0",
     "typescript": "^3.7.4"
   }
