@@ -6,10 +6,10 @@
 
 !define APP_NAME "Syncwatch"
 !define COMP_NAME "utku"
-!define VERSION "0.0.1.0"
+!define VERSION "0.5.1.0"
 !define COPYRIGHT "Utku Çelik © 2020"
 !define DESCRIPTION "Watch together"
-!define INSTALLER_NAME "syncwatch-0.4.3.exe"
+!define INSTALLER_NAME "syncwatch-0.5.1.exe"
 !define MAIN_APP_EXE "syncwatch.exe"
 !define INSTALL_TYPE "SetShellVarContext current"
 !define REG_ROOT "HKCU"
