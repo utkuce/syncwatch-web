@@ -10,6 +10,7 @@
     "start": "tsc && node ./dist/index.js"
   },
   "dependencies": {
+    "blessed": "^0.1.81",
     "firebase": "^7.5.0",
     "get-port": "^5.1.0",
     "node-mpv": "^1.4.3",
@@ -21,6 +22,7 @@
   "devDependencies": {
     "cpy": "^8.0.0",
     "pkg": "^4.4.0",
-    "typescript": "^3.7.4"
+    "typescript": "^3.7.4",
+    "@types/blessed": "^0.1.16"
   }
 }

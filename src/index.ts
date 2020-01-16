@@ -18,6 +18,4 @@ if (process.argv[2]) {
 } else { // else create your own room
 
   peers.createRoom();
-
-  //process.exit();
 }

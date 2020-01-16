@@ -1,3 +1,5 @@
+import * as tui from './tui'
+
 const mpvAPI = require('node-mpv');
 const mpvPlayer = new mpvAPI();
 
@@ -19,7 +21,7 @@ function videoStateEquals(first: any, second: any) {
 }
 
 mpvPlayer.on('quit', function() {
-  console.log("Player quit");
+  tui.addDebugInfo("Player quit");
   process.exit();
 });
 
@@ -31,7 +33,7 @@ mpvPlayer.on('paused', function() {
 
     mpvPlayer.getProperty("time-pos").then(function(value: number) {
 
-      console.log("video paused, position: ", value);
+      tui.addDebugInfo("video paused, position: " + value);
       var event = { "videoState": { "position": value, "paused": true } };
 
       // dont send back received event and prevent duplicates
@@ -52,7 +54,7 @@ mpvPlayer.on('resumed', function() {
 
   mpvPlayer.getProperty("time-pos").then(function(value: number) {
       
-    console.log("video resumed, position: ", value);
+    tui.addDebugInfo("video resumed, position: " + value);
     var event = { "videoState": { "position": value, "paused": false } };
 
     // dont send back received event and prevent duplicates
@@ -70,7 +72,7 @@ mpvPlayer.on('seek', function(timeposition: any) {
 
   mpvPlayer.getProperty("pause").then(function(value: boolean) {
         
-    console.log("video position changed: ", timeposition.end);
+    tui.addDebugInfo("video position changed: " + timeposition.end);
     var event = { "videoState": { "position": timeposition.end, "paused": value } };
 
     // dont send back received event and prevent duplicates
@@ -99,12 +101,12 @@ export function start(url: string) {
 
   if (url.startsWith("magnet:")) {
 
-    console.log("Received magent link, forwarding to torrent handler");
+    tui.addDebugInfo("Received magent link, forwarding to torrent handler");
     torrenthandler.start(url);
 
   } else {
 
-    console.log("Starting video player with source url: " + url);
+    tui.addDebugInfo("Starting video player with source url: " + url);
     mpvPlayer.load(url);
 
   }
@@ -113,6 +115,7 @@ export function start(url: string) {
 export function setSource(sourceURL: string) {
 
   currentSource = sourceURL;
+  tui.setVideoSource(sourceURL);
   start(sourceURL);
 
   // send video url to peer
