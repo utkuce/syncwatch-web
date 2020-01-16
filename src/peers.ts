@@ -12,6 +12,7 @@ var SimplePeer = require('simple-peer');
 var wrtc = require('wrtc');
 
 var remotePeer : any; // TODO: make it an array for one to many connection
+var connected : boolean = false;
 
 var uniqid = require('uniqid');
 const myPeerId = uniqid('peer-');
@@ -50,7 +51,7 @@ export function createRoom() {
                     console.error(error)
                     return
                 }
-                console.log('Push successful')
+                console.log('Room added to firebase database')
                 setNewPeer(myPeerId + " (you)");
             }
         );
@@ -61,7 +62,7 @@ export function createRoom() {
     
     remotePeer.on('connect', () => {
 
-        remotePeer.send(JSON.stringify({'info': 'Connection established'}));
+        connected = true;
 
         if (videoplayer.getCurrentSource() !== "")
             remotePeer.send(JSON.stringify({ "sourceURL": videoplayer.getCurrentSource()}));
@@ -101,10 +102,18 @@ export function join(roomId: string) {
                     console.error(error)
                     return
                 }
-                console.log('Push successful')
+                console.log('Own peer id added to firebase database')
                 setNewPeer(myPeerId + " (you)");
             }
         );
+    });
+
+    remotePeer.on('connect', () => {
+        
+        connected = true;
+        // wait for 'connect' event before using the data channel
+        console.log("Connected to peer");
+        //remotePeer.send('hey, how is it going?');
     });
 
     remotePeer.on('data', (data: string) => {
@@ -148,8 +157,12 @@ function readPeerSignals(roomId: string) {
 
 exports.sendData = function(data: string) {
 
-    console.log("Sending data: " + data);
-    remotePeer.send(data);
+    if (connected) {
+        console.log("Sending data: " + data);
+        remotePeer.send(data);
+    } else {
+        console.log("Did not send sync data because peer is not connected");
+    }
 }
 
 
