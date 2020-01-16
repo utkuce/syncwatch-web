@@ -19,7 +19,7 @@ export function start(magnetURI: string) {
 
       (async () => {
         streamPort = await getPort();
-        tui.addDebugInfo("Starting htpp server on port " + streamPort);
+        tui.addDebugInfo("Starting http media server on port " + streamPort);
         server.listen(streamPort); // start the server listening to a port
 
         tui.addDebugInfo("Searching torrent contents");
