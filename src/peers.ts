@@ -18,7 +18,7 @@ var connected : boolean = false;
 
 var uniqid = require('uniqid');
 const myPeerId = uniqid('peer-');
-process.title = "Connecting as " + myPeerId;
+//process.title = "Connecting as " + myPeerId;
 
 export var roomLink: string = "not_set";
 export function createRoom() {

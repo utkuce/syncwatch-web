@@ -5,7 +5,7 @@ var screen = blessed.screen({
   smartCSR: true
 });
  
-//screen.title = 'my window title';
+screen.title = 'Syncwatch';
 
 var videoSource = blessed.form({
     width: '100%',
