@@ -1,25 +1,5 @@
-
 const mpvAPI = require('node-mpv');
-const mpvPlayer = new mpvAPI({
-  binary: "mpv.exe"
-//  binary: './gui/bin/syncwatchUI.exe',
-//  socket: "\\\\.\\pipe\\syncwatch-socket",
-//  ipc_command: "--input-ipc-server", // prevents the --version call and ui exe hanging
-});
-/*
-exports.setTorrentInfo = function(name, progress, speed, time, peers) {
-  mpvPlayer.command("script-message", [
-    "torrentInfo", String(name), String(progress), String(speed), String(time), String(peers)]);
-}
-
-exports.setRoomInfo = function(roomLink) {
-  mpvPlayer.command("script-message", ["roomLink", String(roomLink)]);
-}
-
-exports.setNewPeer = function(peerId, peerName) {
-  mpvPlayer.command("script-message", ["newPeer", String(peerId), String(peerName)]);
-}
-*/
+const mpvPlayer = new mpvAPI();
 
 var firstStart = true;
 mpvPlayer.on('started', function() {
@@ -49,11 +29,10 @@ mpvPlayer.on('paused', function() {
 
   if (!firstStart) { // dont send the first pause event
 
-    mpvPlayer.getProperty("time-pos").then(function(value: Number) {
+    mpvPlayer.getProperty("time-pos").then(function(value: number) {
 
-      var newPos = value.toFixed(2); 
-      console.log("video paused, position: ", newPos);
-      var event = { "videoState": { "position": newPos, "paused": true } };
+      console.log("video paused, position: ", value);
+      var event = { "videoState": { "position": value, "paused": true } };
 
       // dont send back received event and prevent duplicates
       if (!videoStateEquals(event,lastReceivedEvent) && !videoStateEquals(event,lastEventSent)) {
@@ -71,11 +50,10 @@ mpvPlayer.on('paused', function() {
 mpvPlayer.on('resumed', function() {
 
 
-  mpvPlayer.getProperty("time-pos").then(function(value: Number) {
+  mpvPlayer.getProperty("time-pos").then(function(value: number) {
       
-    var newPos = value.toFixed(2); 
-    console.log("video resumed, position: ", newPos);
-    var event = { "videoState": { "position": newPos, "paused": false } };
+    console.log("video resumed, position: ", value);
+    var event = { "videoState": { "position": value, "paused": false } };
 
     // dont send back received event and prevent duplicates
     if (!videoStateEquals(event,lastReceivedEvent) && !videoStateEquals(event,lastEventSent)) {
@@ -90,11 +68,10 @@ mpvPlayer.on('resumed', function() {
 mpvPlayer.on('seek', function(timeposition: any) {
 
 
-  mpvPlayer.getProperty("pause").then(function(value: Boolean) {
+  mpvPlayer.getProperty("pause").then(function(value: boolean) {
         
-    var newPos = timeposition.end.toFixed(2); 
-    console.log("video position changed: ", newPos);
-    var event = { "videoState": { "position": newPos, "paused": value } };
+    console.log("video position changed: ", timeposition.end);
+    var event = { "videoState": { "position": timeposition.end, "paused": value } };
 
     // dont send back received event and prevent duplicates
     if (!videoStateEquals(event,lastReceivedEvent) && !videoStateEquals(event,lastEventSent)) {
@@ -128,7 +105,6 @@ export function start(url: string) {
   } else {
 
     console.log("Starting video player with source url: " + url);
-    console.log("Please wait...");
     mpvPlayer.load(url);
 
   }
