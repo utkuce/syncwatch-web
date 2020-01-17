@@ -59,7 +59,7 @@ var torrentInfo = blessed.box({
     autoPadding: true
 });
  
-var debug = blessed.list({
+var debug = blessed.log({
   left: '40%',
   top: '10%',
   width: '60%',
