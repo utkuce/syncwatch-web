@@ -1,4 +1,5 @@
 import * as blessed from 'blessed'
+import * as videoplayer from './videoplayer'
  
 // Create a screen object.
 var screen = blessed.screen({
@@ -7,14 +8,20 @@ var screen = blessed.screen({
  
 screen.title = 'Syncwatch';
 
-var videoSource = blessed.form({
+var videoSource = blessed.textarea({
     width: '100%',
     height: '10%',
-    label: 'Video Source',
+    label: 'Video Source - (Shortcuts-> e: focus input area, right click: paste, enter: submit)',
     border: {
         type: 'line'
     },
-    autoPadding: true
+    autoPadding: true,
+    keys: true,
+    mouse: true
+});
+
+videoSource.key('enter', function(ch, key) {
+    videoplayer.setSource(videoSource.getContent());
 });
 
 var roomInfo = blessed.box({
@@ -51,9 +58,7 @@ var torrentInfo = blessed.box({
     },
     autoPadding: true
 });
-
  
-// Create a box perfectly centered horizontally and vertically.
 var debug = blessed.list({
   left: '40%',
   top: '10%',
@@ -81,14 +86,14 @@ screen.key(['escape', 'q', 'C-c'], function(ch, key) {
 });
  
 // Focus our element.
-debug.focus();
+videoSource.focus();
  
 // Render the screen.
 console.clear();
 screen.render();
 
 export function addDebugInfo(info: string) {
-    debug.pushLine(info);
+    debug.add(info);
     screen.render();
 }
 
