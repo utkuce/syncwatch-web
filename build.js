@@ -6,7 +6,7 @@ const cpy = require('cpy');
     try {
 
         console.log("Creating executable");
-        await pkg.exec([ './dist/index.js', '--target', 'node12-win-x64', '--output', 'deploy/syncwatch.exe' ]);
+        await pkg.exec([ '.', '--target', 'node12-win-x64', '--output', 'deploy/syncwatch.exe' ]);
 
         await copy("./node_modules/wrtc/build/Release/wrtc.node", "./deploy/");
 
