@@ -79,10 +79,10 @@ screen.key(['escape', 'q', 'C-c'], function(ch, key) {
   return process.exit(0);
 });
 
-import clipboardy from 'clipboardy';
+var ncp = require("copy-paste");
 screen.key(['C-v'], function(ch, key) {
-    videoplayer.setSource(clipboardy.readSync());
-  });
+    videoplayer.setSource(ncp.paste());
+});
  
 // Focus our element.
 videoSource.focus();

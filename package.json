@@ -12,6 +12,7 @@
   "dependencies": {
     "blessed": "^0.1.81",
     "clipboardy": "^2.1.0",
+    "copy-paste": "github:gabemarshall/node-copy-paste",
     "firebase": "^7.5.0",
     "get-port": "^5.1.0",
     "node-mpv": "^1.4.3",
