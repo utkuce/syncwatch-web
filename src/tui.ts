@@ -8,20 +8,14 @@ var screen = blessed.screen({
  
 screen.title = 'Syncwatch';
 
-var videoSource = blessed.textarea({
+var videoSource = blessed.box({
     width: '100%',
     height: '10%',
-    label: 'Video Source - (Shortcuts-> e: focus input area, right click: paste, enter: submit)',
+    label: 'Video Source - (Paste URL with ctrl-v)',
     border: {
         type: 'line'
     },
     autoPadding: true,
-    keys: true,
-    mouse: true
-});
-
-videoSource.key('enter', function(ch, key) {
-    videoplayer.setSource(videoSource.getContent());
 });
 
 var roomInfo = blessed.box({
@@ -84,6 +78,11 @@ screen.append(debug);
 screen.key(['escape', 'q', 'C-c'], function(ch, key) {
   return process.exit(0);
 });
+
+import clipboardy from 'clipboardy';
+screen.key(['C-v'], function(ch, key) {
+    videoplayer.setSource(clipboardy.readSync());
+  });
  
 // Focus our element.
 videoSource.focus();

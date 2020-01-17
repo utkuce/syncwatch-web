@@ -1,6 +1,6 @@
 {
   "name": "syncwatch-desktop",
-  "version": "0.5.4",
+  "version": "0.5.6",
   "main": "index.js",
   "author": "Utku Çelik <utkuce@gmail.com>",
   "license": "MIT",
@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "blessed": "^0.1.81",
+    "clipboardy": "^2.1.0",
     "firebase": "^7.5.0",
     "get-port": "^5.1.0",
     "node-mpv": "^1.4.3",
@@ -26,8 +27,8 @@
     "@types/blessed": "^0.1.16"
   },
   "bin": "dist/index.js",
-  "pkg": { 
+  "pkg": {
     "target": "node12-win-x64",
-    "assets": "node_modules/blessed/**/*" 
+    "assets": "node_modules/blessed/**/*"
   }
 }
