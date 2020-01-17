@@ -14,7 +14,7 @@ var SimplePeer = require('simple-peer');
 var wrtc = require('wrtc');
 
 var remotePeer : any; // TODO: make it an array for one to many connection
-var connected : boolean = false;
+export var connected : boolean = false;
 
 var uniqid = require('uniqid');
 const myPeerId = uniqid('peer-');

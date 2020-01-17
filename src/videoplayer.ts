@@ -116,11 +116,14 @@ export function setSource(sourceURL: string) {
 
   currentSource = sourceURL;
   tui.setVideoSource(sourceURL);
-  start(sourceURL);
 
   // send video url to peer
-  // if connected
-  //peers.sendData(JSON.stringify({ "sourceURL": sourceURL}));
+  if (peers.connected)
+    peers.sendData(JSON.stringify({ "sourceURL": sourceURL}));
+  else 
+    tui.addDebugInfo("Did not send source url because peer is not connected");
+
+  start(sourceURL);
 }
 
 export function setPause(paused: Boolean) {
