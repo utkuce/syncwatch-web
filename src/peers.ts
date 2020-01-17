@@ -35,10 +35,8 @@ export function createRoom() {
         });
 
     roomLink = "syncwatch://" + roomId;
-    tui.setRoomLink(roomLink);
  
-    tui.addDebugInfo("Creating room");
-    tui.addDebugInfo("Join link: " + roomLink);
+    tui.addDebugInfo("Creating room, please wait...");
 
     //videoplayer.setRoomInfo(roomLink);
     
@@ -54,7 +52,12 @@ export function createRoom() {
                     console.error(error)
                     return
                 }
-                tui.addDebugInfo('Room added to firebase database')
+                
+                tui.addDebugInfo('Room added to firebase database');
+                
+                tui.setRoomLink(roomLink);
+                tui.addDebugInfo("Join link: " + roomLink);
+
                 setNewPeer(myPeerId + " (you)");
             }
         );
