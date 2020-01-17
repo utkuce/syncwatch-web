@@ -115,6 +115,11 @@ export function start(url: string) {
 export function setSource(sourceURL: string) {
 
   currentSource = sourceURL;
+  if (sourceURL.startsWith("%HOMEPATH%") && process.env["%HOMEPATH%"]) {
+    tui.addDebugInfo("Expanding variable %USERPATH%");
+    sourceURL = sourceURL.replace("%HOMEPATH%", process.env["%HOMEPATH%"]);
+  }
+
   tui.setVideoSource(sourceURL);
 
   // send video url to peer
