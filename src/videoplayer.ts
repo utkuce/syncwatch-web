@@ -114,21 +114,21 @@ export function start(url: string) {
 
 export function setSource(sourceURL: string) {
 
-  currentSource = sourceURL;
-  if (sourceURL.startsWith("%HOMEPATH%") && process.env["%HOMEPATH%"]) {
-    tui.addDebugInfo("Expanding variable %USERPATH%");
-    sourceURL = sourceURL.replace("%HOMEPATH%", process.env["%HOMEPATH%"]);
+  currentSource = sourceURL.trim();
+  if (currentSource.startsWith("%HOMEPATH%") && process.env.HOMEPATH) {
+    tui.addDebugInfo("Expanding variable %HOMEPATH%");
+    currentSource = currentSource.replace("%HOMEPATH%", process.env.HOMEPATH);
   }
 
-  tui.setVideoSource(sourceURL);
+  tui.setVideoSource(currentSource);
 
   // send video url to peer
   if (peers.connected)
-    peers.sendData(JSON.stringify({ "sourceURL": sourceURL}));
+    peers.sendData(JSON.stringify({ "sourceURL": currentSource}));
   else 
     tui.addDebugInfo("Did not send source url because peer is not connected");
 
-  start(sourceURL);
+  start(currentSource);
 }
 
 export function setPause(paused: Boolean) {
