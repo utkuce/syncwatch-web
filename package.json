@@ -27,7 +27,7 @@
     "typescript": "^3.7.4",
     "@types/blessed": "^0.1.16"
   },
-  "bin": "dist/index.js",
+  "bin": "dist/desktop/index.js",
   "pkg": {
     "target": "node12-win-x64",
     "assets": "node_modules/blessed/**/*"
