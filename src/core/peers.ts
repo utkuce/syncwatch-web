@@ -193,8 +193,7 @@ function handleReceived(data: string) {
         case "sourceURL":
 
             // { "sourceURL": url}
-            videoplayer.start(message["sourceURL"]);
-            
+            videoplayer.setSource(message["sourceURL"], false);
             break;
 
     }

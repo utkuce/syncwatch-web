@@ -112,7 +112,7 @@ export function start(url: string) {
   }
 }
 
-export function setSource(sourceURL: string) {
+export function setSource(sourceURL: string, sendToPeer: boolean = true) {
 
   currentSource = sourceURL.trim();
   if (currentSource.startsWith("%HOMEPATH%") && process.env.HOMEPATH) {
@@ -123,10 +123,14 @@ export function setSource(sourceURL: string) {
   tui.setVideoSource(currentSource);
 
   // send video url to peer
-  if (peers.connected)
-    peers.sendData(JSON.stringify({ "sourceURL": currentSource}));
-  else 
+  if (peers.connected) {
+    if (sendToPeer) {
+      peers.sendData(JSON.stringify({ "sourceURL": currentSource}));
+    }
+  }
+  else {
     console.log("Did not send source url because peer is not connected");
+  }
 
   start(currentSource);
 }
