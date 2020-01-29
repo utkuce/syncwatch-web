@@ -12,7 +12,7 @@ mpvPlayer.on('started', function() {
   
 });
 
-var peers = require("./peers");
+var peers = require("../core/peers");
 
 function videoStateEquals(first: any, second: any) {
   return first !== undefined && second != undefined && 
@@ -21,7 +21,7 @@ function videoStateEquals(first: any, second: any) {
 }
 
 mpvPlayer.on('quit', function() {
-  tui.addDebugInfo("Player quit");
+  console.log("Player quit");
   process.exit();
 });
 
@@ -33,7 +33,7 @@ mpvPlayer.on('paused', function() {
 
     mpvPlayer.getProperty("time-pos").then(function(value: number) {
 
-      tui.addDebugInfo("video paused, position: " + value);
+      console.log("video paused, position: " + value);
       var event = { "videoState": { "position": value, "paused": true } };
 
       // dont send back received event and prevent duplicates
@@ -54,7 +54,7 @@ mpvPlayer.on('resumed', function() {
 
   mpvPlayer.getProperty("time-pos").then(function(value: number) {
       
-    tui.addDebugInfo("video resumed, position: " + value);
+    console.log("video resumed, position: " + value);
     var event = { "videoState": { "position": value, "paused": false } };
 
     // dont send back received event and prevent duplicates
@@ -72,7 +72,7 @@ mpvPlayer.on('seek', function(timeposition: any) {
 
   mpvPlayer.getProperty("pause").then(function(value: boolean) {
         
-    tui.addDebugInfo("video position changed: " + timeposition.end);
+    console.log("video position changed: " + timeposition.end);
     var event = { "videoState": { "position": timeposition.end, "paused": value } };
 
     // dont send back received event and prevent duplicates
@@ -85,7 +85,7 @@ mpvPlayer.on('seek', function(timeposition: any) {
 
 });
 
-import * as torrenthandler from './torrenthandler'
+import * as torrenthandler from '../core/torrenthandler'
 var lastReceivedEvent: Object;
 var currentSource: string = "";
 
@@ -101,12 +101,12 @@ export function start(url: string) {
 
   if (url.startsWith("magnet:")) {
 
-    tui.addDebugInfo("Received magent link, forwarding to torrent handler");
+    console.log("Received magent link, forwarding to torrent handler");
     torrenthandler.start(url);
 
   } else {
 
-    tui.addDebugInfo("Starting video player with source url: " + url);
+    console.log("Starting video player with source url: " + url);
     mpvPlayer.load(url);
 
   }
@@ -116,7 +116,7 @@ export function setSource(sourceURL: string) {
 
   currentSource = sourceURL.trim();
   if (currentSource.startsWith("%HOMEPATH%") && process.env.HOMEPATH) {
-    tui.addDebugInfo("Expanding variable %HOMEPATH%");
+    console.log("Expanding variable %HOMEPATH%");
     currentSource = currentSource.replace("%HOMEPATH%", process.env.HOMEPATH);
   }
 
@@ -126,7 +126,7 @@ export function setSource(sourceURL: string) {
   if (peers.connected)
     peers.sendData(JSON.stringify({ "sourceURL": currentSource}));
   else 
-    tui.addDebugInfo("Did not send source url because peer is not connected");
+    console.log("Did not send source url because peer is not connected");
 
   start(currentSource);
 }

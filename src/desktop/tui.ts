@@ -1,5 +1,9 @@
 import * as blessed from 'blessed'
 import * as videoplayer from './videoplayer'
+
+console.log = function(msg : string){
+    addDebugInfo(msg);
+};
  
 // Create a screen object.
 var screen = blessed.screen({

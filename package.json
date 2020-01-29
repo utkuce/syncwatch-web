@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "build": "tsc && node build.js",
-    "start": "tsc && node ./dist/index.js"
+    "start": "tsc && node ./dist/desktop/index.js"
   },
   "dependencies": {
     "blessed": "^0.1.81",

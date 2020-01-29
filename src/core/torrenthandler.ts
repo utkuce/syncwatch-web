@@ -1,7 +1,7 @@
 const WebTorrent = require('webtorrent-hybrid');
 var client = new WebTorrent();
-import * as videoplayer from './videoplayer'
-import * as tui from './tui'
+import * as videoplayer from '../desktop/videoplayer'
+import * as tui from '../desktop/tui'
 
 require('events').EventEmitter.defaultMaxListeners = 0;
 
@@ -19,16 +19,16 @@ export function start(magnetURI: string) {
 
       (async () => {
         streamPort = await getPort();
-        tui.addDebugInfo("Starting http media server on port " + streamPort);
+        console.log("Starting http media server on port " + streamPort);
         server.listen(streamPort); // start the server listening to a port
 
-        tui.addDebugInfo("Searching torrent contents");
+        console.log("Searching torrent contents");
         torrent.files.forEach(function (file: any, index: number) {
-          //tui.addDebugInfo(file.name);
+          //console.log(file.name);
           var ext = file.name.substr(file.name.lastIndexOf('.') + 1);
           var videoExtensions = require('video-extensions');
           if (videoExtensions.includes(ext)) {
-            tui.addDebugInfo("Found video file at index " + index);
+            console.log("Found video file at index " + index);
             videoplayer.start("http://localhost:" + streamPort + "/" + index);
           }
         });
@@ -55,14 +55,14 @@ export function start(magnetURI: string) {
             
           downloadInfo = torrent.name + " (Download complete)";
 
-          tui.addDebugInfo(downloadInfo);
+          console.log(downloadInfo);
           videoplayer.setTitle(downloadInfo);
 
           clearInterval(interval);
         });
       
         torrent.on('error', function (err: any) {
-            tui.addDebugInfo(err);
+            console.log(err);
         });
       
         // visit http://localhost:<port>/ to see a list of files

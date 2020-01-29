@@ -1,5 +1,5 @@
 
-import * as peers from "./peers"
+import * as peers from "../core/peers"
 import * as videoplayer from "./videoplayer"
 
 // if started with a join link join a room
