@@ -1,6 +1,6 @@
 {
   "name": "syncwatch-desktop",
-  "version": "0.5.7",
+  "version": "0.5.8",
   "main": "index.js",
   "author": "Utku Çelik <utkuce@gmail.com>",
   "license": "MIT",

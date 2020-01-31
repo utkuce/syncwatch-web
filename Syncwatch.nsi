@@ -6,7 +6,7 @@
 
 !define APP_NAME "Syncwatch"
 !define COMP_NAME "utku"
-!define VERSION "0.5.7.0"
+!define VERSION "0.5.8.0"
 !define COPYRIGHT "Utku Çelik © 2020"
 !define DESCRIPTION "Watch together"
 !define INSTALLER_NAME "syncwatch-${VERSION}.exe"

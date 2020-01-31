@@ -1,5 +1,4 @@
 const WebTorrent = require('webtorrent-hybrid');
-var client = new WebTorrent();
 import * as videoplayer from '../desktop/videoplayer'
 import * as tui from '../desktop/tui'
 
@@ -8,10 +7,29 @@ require('events').EventEmitter.defaultMaxListeners = 0;
 var streamPort: number;
 
 export var downloadInfo = "";
+var currentTorrent : any;
+
+var client = new WebTorrent();
+var interval : any;
 
 export function start(magnetURI: string) {
 
+    // remove last torrent
+    if (currentTorrent != undefined) {
+      console.log("Removing previous torrent: " + currentTorrent.name);
+      client.remove(currentTorrent, function(err: string){
+        if (err) 
+          console.log("Error removing torrent: " + err);
+        else 
+          console.log("Removing torrent successful");
+      });
+    }
+
+    // and add the new one
     client.add(magnetURI, function (torrent: any) {
+      
+      currentTorrent = torrent;
+      
       // create HTTP server for this torrent
       var server = torrent.createServer();
 
@@ -33,7 +51,8 @@ export function start(magnetURI: string) {
           }
         });
 
-        var interval = setInterval(function () {
+        clearInterval(interval);
+        interval = setInterval(function () {
 
           var ETA : string = (torrent.timeRemaining/60000).toFixed(2) + " minutes";
           if (torrent.timeRemaining < 60000) {
@@ -46,7 +65,7 @@ export function start(magnetURI: string) {
           + "\nTorrent peer(s): " + torrent.numPeers
           + "\nETA: " + ETA;
 
-          //videoplayer.setTitle(downloadInfo);
+          videoplayer.setTitle(torrent.name);
           tui.setTorrentInfo(downloadInfo);
       
         }, 200); // every 200 ms
@@ -54,7 +73,8 @@ export function start(magnetURI: string) {
         torrent.on("done", function () {
             
           downloadInfo = torrent.name + " (Download complete)";
-
+          
+          tui.setTorrentInfo(downloadInfo);
           console.log(downloadInfo);
           videoplayer.setTitle(downloadInfo);
 
