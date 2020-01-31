@@ -9,8 +9,9 @@ console.log = function(msg : string){
 var screen = blessed.screen({
   smartCSR: true
 });
- 
-screen.title = 'Syncwatch';
+
+var pjson = require('../../package.json');
+screen.title = 'Syncwatch ' + pjson.version;
 
 var videoSource = blessed.box({
     width: '100%',
