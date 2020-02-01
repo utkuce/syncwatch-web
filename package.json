@@ -1,6 +1,6 @@
 {
   "name": "syncwatch-desktop",
-  "version": "0.5.8",
+  "version": "0.6.0",
   "main": "index.js",
   "author": "Utku Çelik <utkuce@gmail.com>",
   "license": "MIT",
@@ -25,7 +25,8 @@
     "cpy": "^8.0.0",
     "pkg": "^4.4.0",
     "typescript": "^3.7.4",
-    "@types/blessed": "^0.1.16"
+    "@types/blessed": "^0.1.16",
+    "@types/uniqid": "^4.1.3"
   },
   "bin": "dist/desktop/index.js",
   "pkg": {
