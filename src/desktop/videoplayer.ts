@@ -1,4 +1,6 @@
 import * as tui from './tui'
+import * as room from '../core/room'
+import {isEqual} from 'lodash';
 
 const mpvAPI = require('node-mpv');
 const mpvPlayer = new mpvAPI();
@@ -13,17 +15,21 @@ mpvPlayer.on('started', function() {
   
 });
 
-import * as room from '../core/room'
-
+var lastEvent : any;
 mpvPlayer.on('paused', function() {
 
   if (!firstStart) { // dont send the first pause event
 
     mpvPlayer.getProperty("time-pos").then(function(value: number) {
 
-      console.log("video paused, position: " + value);
       var event = { "videoState": { "position": value, "paused": true } };
-      room.sendData(event);
+      if (!isEqual(event, lastEvent)) { // prevent duplicate events
+
+        lastEvent = event;
+        console.log("video paused, position: " + value);
+        room.sendData(event);
+
+      }
 
     });
   }
@@ -36,9 +42,14 @@ mpvPlayer.on('resumed', function() {
 
   mpvPlayer.getProperty("time-pos").then(function(value: number) {
       
-    console.log("video resumed, position: " + value);
     var event = { "videoState": { "position": value, "paused": false } };
-    room.sendData(event);
+    if (!isEqual(event, lastEvent)) { // prevent duplicate events
+
+      lastEvent = event;
+      console.log("video resumed, position: " + value);
+      room.sendData(event);
+
+    }
 
   });
 
