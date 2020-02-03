@@ -3,6 +3,7 @@ import 'firebase/auth'
 import 'firebase/database'
 
 import uniqid from 'uniqid'
+import {isEqual} from 'lodash';
 
 import * as videoplayer from '../desktop/videoplayer';
 import * as tui from '../desktop/tui'
@@ -38,7 +39,7 @@ export function create() {
                 return;
             }
             
-            console.log('Room added to firebase database');
+            console.log('Room created on firebase database');
             console.log("Join link: " + roomLink);
             tui.setRoomLink(roomLink);
         }
@@ -52,10 +53,13 @@ export function join(roomId: string) {
     listenVideoState(roomId);
 }
 
+var lastReceivedEvent = new Object();
+var lastSentEvent : any;
+
 export function sendData(data: any) {
 
-    console.log("Sending message: " + JSON.stringify(data));
-    
+    lastSentEvent = data;
+
     var roomRef = firebase.database().ref(roomId);
     roomRef.update(data,
 
@@ -66,7 +70,7 @@ export function sendData(data: any) {
                 return;
             }
             
-            console.log("Pushed data successfully");
+            console.log("Sent event: " + JSON.stringify(data));
         }
     ); 
 }
@@ -76,24 +80,29 @@ function listenVideoState(roomId: string) {
     var roomRef = firebase.database().ref(roomId);
     roomRef.on("child_changed", function(a: any, prevChildKey?: string|null) {
 
-        var dataType : string = a.key;
-        var data = JSON.stringify(a.val());
-        console.log("New data: {" + dataType + ": " + data + "}");
+        var eventType : string = a.key;
+        var data = a.val();
 
-        switch (dataType) {
+        var newEvent = {[eventType]: data};
+        if (isEqual(newEvent, lastSentEvent))
+            return;
+
+        console.log("Received event: " + JSON.stringify(newEvent));
+
+        switch (eventType) {
 
             case "videoState":
     
                 // { "videoState": { "position": vid.currentTime, "paused": vid.paused } }
-                videoplayer.setPause(a.val()["paused"]);
-                videoplayer.setPosition(parseFloat(a.val()["position"]));
+                videoplayer.setPause(data["paused"]);
+                videoplayer.setPosition(parseFloat(data["position"]));
     
                 break;
     
             case "sourceURL":
     
                 // { "sourceURL": url}
-                videoplayer.setSource(a.val(), false);
+                videoplayer.setSource(data.val(), false);
 
                 break;
         }
