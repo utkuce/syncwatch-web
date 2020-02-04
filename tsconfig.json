@@ -9,5 +9,5 @@
     "sourceMap": true,
     "outDir": "./dist"
   },
-  "include": ["src/core/*", "src/desktop/*"]
+  "include": ["src/**/*"]
 }
