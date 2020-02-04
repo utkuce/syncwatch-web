@@ -50,8 +50,12 @@ export function create() {
 }
 
 var lastSentEvent : any;
+var lastReceivedEvent : any;
 
 export function sendData(data: any) {
+
+    if (isEqual(lastReceivedEvent, data))
+        return;
 
     lastSentEvent = data;
 
@@ -122,11 +126,11 @@ function handleData(snapshot : any) {
     var eventType : string = snapshot.key;
     var data = snapshot.val();
 
-    var newEvent = {[eventType]: data};
-    if (isEqual(newEvent, lastSentEvent))
+    lastReceivedEvent = {[eventType]: data};
+    if (isEqual(lastReceivedEvent, lastSentEvent))
         return;
 
-    console.log("Received: " + JSON.stringify(newEvent));
+    console.log("Received: " + JSON.stringify(lastReceivedEvent));
 
     switch (eventType) {
 
