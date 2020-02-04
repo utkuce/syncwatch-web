@@ -35,11 +35,11 @@ var roomInfo = blessed.box({
     autoPadding: true
 });
 
-var peersInfo = blessed.list({
+var usersInfo = blessed.list({
     top: '20%',
     width: '40%',
     height: '40%',
-    label: 'Peers',
+    label: 'Connected users',
     border: {
         type: 'line'
     },
@@ -74,7 +74,7 @@ var debug = blessed.log({
 // Append our box to the screen.
 screen.append(videoSource);
 screen.append(roomInfo);
-screen.append(peersInfo);
+screen.append(usersInfo);
 screen.append(torrentInfo);
 screen.append(debug);
 
@@ -111,8 +111,13 @@ export function setRoomLink(link: string) {
     screen.render();
 }
 
-export function addNewPeer(peer: string) {
-    peersInfo.pushLine(peer);
+export function setUsers(data: any) {
+
+    var usersDisplay : string = "";
+    for(var key in data) 
+        usersDisplay += key + " ("+ data[key] + ")\n"
+
+    usersInfo.setContent(usersDisplay);
     screen.render();
 }
 

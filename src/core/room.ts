@@ -46,14 +46,9 @@ export function create() {
 
     );
 
-    listenVideoState(roomId);
+    join(roomId);
 }
 
-export function join(roomId: string) {
-    listenVideoState(roomId);
-}
-
-var lastReceivedEvent = new Object();
 var lastSentEvent : any;
 
 export function sendData(data: any) {
@@ -70,41 +65,90 @@ export function sendData(data: any) {
                 return;
             }
             
-            console.log("Sent event: " + JSON.stringify(data));
+            console.log("Sent: " + JSON.stringify(data));
         }
     ); 
 }
 
-function listenVideoState(roomId: string) {
+export function join(rId: string) {
 
+    roomId = rId;
+    tui.setRoomLink("syncwatch://" + roomId);
+
+    const username = "Guest"; //TODO: modifiable
+
+    const myUserId = uniqid('user-');
     var roomRef = firebase.database().ref(roomId);
-    roomRef.on("child_changed", function(a: any, prevChildKey?: string|null) {
 
-        var eventType : string = a.key;
-        var data = a.val();
 
-        var newEvent = {[eventType]: data};
-        if (isEqual(newEvent, lastSentEvent))
-            return;
+    roomRef.child("users").update( {
+            [myUserId]: "Guest"}, function(error: Error | null){
 
-        console.log("Received event: " + JSON.stringify(newEvent));
+                if (error) {
+                    console.error(error);
+                    return;
+                }
+                
+                console.log("Joined the room as " + myUserId + "(" + username + ")" );
+            }
+    );
 
-        switch (eventType) {
-
-            case "videoState":
-    
-                // { "videoState": { "position": vid.currentTime, "paused": vid.paused } }
-                videoplayer.setPause(data["paused"]);
-                videoplayer.setPosition(parseFloat(data["position"]));
-    
-                break;
-    
-            case "sourceURL":
-    
-                // { "sourceURL": url}
-                videoplayer.setSource(data.val(), false);
-
-                break;
+    roomRef.child("users/" + myUserId).onDisconnect().remove(
+        function(error: Error | null) {
+            if (error) {
+                console.error(error);
+                return;
+            }
         }
+    );
+    
+    listenRoom(roomRef)
+    
+}
+
+function listenRoom(roomRef: firebase.database.Reference) {
+
+    roomRef.on("child_added", function(snapshot: any, prevChildKey?: string|null) {
+        handleData(snapshot)
     });
+
+    roomRef.on("child_changed", function(snapshot: any, prevChildKey?: string|null) {
+        handleData(snapshot)
+    });
+}
+
+function handleData(snapshot : any) {
+
+    var eventType : string = snapshot.key;
+    var data = snapshot.val();
+
+    var newEvent = {[eventType]: data};
+    if (isEqual(newEvent, lastSentEvent))
+        return;
+
+    console.log("Received: " + JSON.stringify(newEvent));
+
+    switch (eventType) {
+
+        case "videoState":
+
+            // { "videoState": { "position": vid.currentTime, "paused": vid.paused } }
+            videoplayer.setPause(data["paused"]);
+            videoplayer.setPosition(parseFloat(data["position"]));
+
+            break;
+
+        case "sourceURL":
+
+            // { "sourceURL": url}
+            videoplayer.setSource(data, false);
+
+            break;
+        
+        case "users":
+
+            //{"users":{"user-0":"name1","user-1":"name2","user-3":"name3"}
+            tui.setUsers(data)
+
+    }
 }
