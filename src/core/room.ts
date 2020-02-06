@@ -30,7 +30,7 @@ export function create() {
     roomLink = "syncwatch://" + roomId;
     
     var roomRef = firebase.database().ref(roomId);
-    roomRef.set({"sourceURL": 0, "videoState": { "position": 0, "paused": 0 }},
+    roomRef.set(null,
 
         function(error: Error | null){
 
