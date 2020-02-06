@@ -1,6 +1,2 @@
-node_modules
-dist/
-deploy/
-*.log
-*.exe
-config.ts
+/node_modules
+/dist

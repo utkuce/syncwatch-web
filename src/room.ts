@@ -5,8 +5,7 @@ import 'firebase/database'
 import uniqid from 'uniqid'
 import {isEqual} from 'lodash';
 
-import * as videoplayer from '../desktop/videoplayer';
-import * as tui from '../desktop/tui'
+import * as video from './video'
 
 var firebaseConfig = {
     apiKey: "AIzaSyBXuvO9e7-ag2fqbSV5gPoBmOlCedfIHuk",
@@ -22,13 +21,10 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 var roomId: string;
-export var roomLink: string = "not_set";
 
 export function create() {
 
     roomId = uniqid('room-');
-    roomLink = "syncwatch://" + roomId;
-    
     var roomRef = firebase.database().ref(roomId);
     roomRef.set(null,
 
@@ -40,17 +36,24 @@ export function create() {
             }
             
             console.log('Room created on firebase database');
-            console.log("Join link: " + roomLink);
-            tui.setRoomLink(roomLink);
+
             join(roomId);
+
+            //tui.setRoomLink(roomLink);
         }
+
     );
+
+    return roomId.split('-')[1];
 }
 
 var lastSentEvent : any;
 var lastReceivedEvent : any;
 
 export function sendData(data: any) {
+
+    if (roomId == null)
+        return;
 
     if (isEqual(lastReceivedEvent, data))
         return;
@@ -75,7 +78,7 @@ export function sendData(data: any) {
 export function join(rId: string) {
 
     roomId = rId;
-    tui.setRoomLink("syncwatch://" + roomId);
+    //tui.setRoomLink("syncwatch://" + roomId);
 
     const username = "Guest"; //TODO: modifiable
 
@@ -133,22 +136,39 @@ function handleData(snapshot : any) {
         case "videoState":
 
             // { "videoState": { "position": vid.currentTime, "paused": vid.paused } }
-            videoplayer.setPause(data["paused"]);
-            videoplayer.setPosition(parseFloat(data["position"]));
+            video.seekTo(parseFloat(data["position"]));
+            video.setPause(data["paused"]);
 
             break;
 
         case "sourceURL":
 
             // { "sourceURL": url}
-            videoplayer.setSource(data, false);
+            video.setSource(data);
 
             break;
         
         case "users":
 
             //{"users":{"user-0":"name1","user-1":"name2","user-3":"name3"}
-            tui.setUsers(data)
+
+            var userList = <HTMLUListElement> document.createElement('ul');
+            for (var key in data) {
+
+                var userId = key;
+                var userName = data[key];
+                
+                var li = document.createElement('li');
+                li.innerHTML = userId + " (" + userName + ")";
+                userList.appendChild(li);
+            }
+
+            var usersElement = document.getElementById('users');
+            if (usersElement) {
+                usersElement.innerHTML = '';
+                usersElement.appendChild(userList);
+            }
+            //tui.setUsers(data)
 
     }
 }

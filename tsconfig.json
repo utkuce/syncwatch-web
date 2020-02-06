@@ -1,13 +1,26 @@
 {
   "compilerOptions": {
-    "target": "es2016",
     "module": "commonjs",
-    "strict": true,
-    "alwaysStrict": true,
-    "moduleResolution": "node",
     "esModuleInterop": true,
+    "strict": true,
+    "noImplicitReturns": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
     "sourceMap": true,
-    "outDir": "./dist"
+    "declaration": true,
+    "target": "es2015",
+    "lib": ["es2017", "dom"],
+    "outDir": "dist",
+    "rootDir": "./",
+    "baseUrl": ".",
+    "paths": {
+      "*": ["types/*"]
+    }
   },
-  "include": ["src/**/*"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules/*"
+  ]
 }
