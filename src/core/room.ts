@@ -42,11 +42,9 @@ export function create() {
             console.log('Room created on firebase database');
             console.log("Join link: " + roomLink);
             tui.setRoomLink(roomLink);
+            join(roomId);
         }
-
     );
-
-    join(roomId);
 }
 
 var lastSentEvent : any;
@@ -94,6 +92,7 @@ export function join(rId: string) {
                 }
                 
                 console.log("Joined the room as " + myUserId + "(" + username + ")" );
+                listenRoom(roomRef);
             }
     );
 
@@ -105,9 +104,6 @@ export function join(rId: string) {
             }
         }
     );
-    
-    listenRoom(roomRef)
-    
 }
 
 function listenRoom(roomRef: firebase.database.Reference) {
