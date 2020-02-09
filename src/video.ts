@@ -1,39 +1,54 @@
 import {sendData} from './room'
 import {isEqual} from 'lodash';
 
-const video = <HTMLVideoElement> document.getElementById('video');
-//video.src = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.webm";
+import videojs from 'video.js'
+import 'videojs-youtube'
 
-var stateEvents = ["seeked", "play", "pause"]
-stateEvents.forEach(function (entry) {
-    video.addEventListener(entry, videoEvent);
+const getVideoId = require('get-video-id');
+
+const defaultSrc = "https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c0/Big_Buck_Bunny_4K.webm/Big_Buck_Bunny_4K.webm.720p.webm";
+var player = videojs("video1", 
+  { 
+    controls: true,
+    preload: 'auto',
+    "techOrder": ["html5", "youtube"]
+  });
+
+var syncEvents = ["seeked", "play", "pause"]
+syncEvents.forEach(function (entry) {
+  player.on(entry, function () {
+    console.log(entry + " event")
+    videoEvent();
+  });
 });
 
+setSource(defaultSrc);
+
 function getVideoState() {
-    return { 
-        "videoState": { 
-            "position": video?.currentTime.toFixed(1), 
-            "paused": video?.paused 
-        } 
-    };
+  return { 
+      "videoState": { 
+          "position": Math.floor(player.currentTime()), 
+          "paused": player.paused()
+      } 
+  };
 }
 
 var lastEvent : any;
 function videoEvent() {
-    var event = getVideoState();
-    if (!isEqual(event, lastEvent)) { // prevent duplicate events
-        lastEvent = event;
-        console.log("video event: " + JSON.stringify(event));
-        sendData(event);
-      }
+  var event = getVideoState();
+  if (!isEqual(event, lastEvent)) { // prevent duplicate events
+      lastEvent = event;
+      console.log("video event: " + JSON.stringify(event));
+      sendData(event);
+  }
 }
 
 export function setPause(value: boolean) {
-    value ? video?.pause() : video?.play();
+  value ? player.pause() : player.play();
 }
 
 export function seekTo(seconds: number) {
-    if (video) video.currentTime = seconds;
+  player.currentTime(seconds);
 }
 
 export function sourceInput() {
@@ -43,10 +58,21 @@ export function sourceInput() {
 }
 
 export function setSource(sourceURL: string) {
-  if (video) {
-    video.src = sourceURL;
-    console.log("video source is set to " + video.src);
-  }
+
+  // The URL of the media file (or YouTube/Vimeo URL).
+  var provider: string = 'video/mp4';
+  if (getVideoId(sourceURL).service === "youtube")
+    provider = 'video/youtube';
+  
+  player.src({
+    type: provider,
+    src: sourceURL
+  });
+
+  console.log("video source is set to " + sourceURL);
+  setPause(true);
+  seekTo(1);
+  
 }
 
 //import * as torrenthandler from '../core/torrenthandler'
