@@ -6,11 +6,12 @@ import 'videojs-youtube'
 
 const getVideoId = require('get-video-id');
 
-const defaultSrc = "https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c0/Big_Buck_Bunny_4K.webm/Big_Buck_Bunny_4K.webm.720p.webm";
+const defaultSrc = "https://archive.org/download/ElephantsDream/ed_hd.mp4";
 var player = videojs("video1", 
   { 
     controls: true,
     preload: 'auto',
+    "fluid": true,
     "techOrder": ["html5", "youtube"]
   });
 

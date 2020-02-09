@@ -152,23 +152,25 @@ function handleData(snapshot : any) {
 
             //{"users":{"user-0":"name1","user-1":"name2","user-3":"name3"}
 
-            var userList = <HTMLUListElement> document.createElement('ul');
-            for (var key in data) {
-
-                var userId = key;
-                var userName = data[key];
-                
-                var li = document.createElement('li');
-                li.innerHTML = userId + " (" + userName + ")";
-                userList.appendChild(li);
-            }
-
             var usersElement = document.getElementById('users');
             if (usersElement) {
                 usersElement.innerHTML = '';
-                usersElement.appendChild(userList);
-            }
-            //tui.setUsers(data)
+                for (var key in data) {
 
+                    var userId = key;
+                    var userName = data[key];
+                    
+                    var user = document.createElement('a');
+                    if (userName === "Guest") {
+                        user.innerHTML = "Guest " + userId.split('-')[1];
+                        user.setAttribute('class', 'class="w3-bar-item w3-button w3-hover-white"')
+                    } else {
+                        user.innerHTML = userName;
+                        user.setAttribute('class', 'class="w3-bar-item w3-button"')
+                    }
+                    
+                    usersElement.appendChild(user);
+                }
+            }
     }
 }
