@@ -75,26 +75,32 @@ export function sendData(data: any) {
     ); 
 }
 
+var myUserId: string;
 export function join(rId: string) {
 
     roomId = rId;
-    //tui.setRoomLink("syncwatch://" + roomId);
+    var userName = "Guest";
 
-    const username = "Guest"; //TODO: modifiable
+    if (document.cookie) {
+        console.log("Cookie: " + document.cookie)
+        userName = document.cookie;
+    } else {
+        document.cookie = userName;
+    }
 
-    const myUserId = uniqid('user-');
+    myUserId = uniqid('user-');
     var roomRef = firebase.database().ref(roomId);
 
 
     roomRef.child("users").update( {
-            [myUserId]: "Guest"}, function(error: Error | null){
+            [myUserId]: userName}, function(error: Error | null){
 
                 if (error) {
                     console.error(error);
                     return;
                 }
                 
-                console.log("Joined the room as " + myUserId + "(" + username + ")" );
+                console.log("Joined the room as " + myUserId + "(" + userName + ")" );
                 listenRoom(roomRef);
             }
     );
@@ -154,23 +160,54 @@ function handleData(snapshot : any) {
 
             var usersElement = document.getElementById('users');
             if (usersElement) {
+           
                 usersElement.innerHTML = '';
+          
                 for (var key in data) {
 
                     var userId = key;
                     var userName = data[key];
-                    
-                    var user = document.createElement('a');
+                    var user = document.createElement('a');                  
+
                     if (userName === "Guest") {
                         user.innerHTML = "Guest " + userId.split('-')[1];
-                        user.setAttribute('class', 'class="w3-bar-item w3-button w3-hover-white"')
                     } else {
                         user.innerHTML = userName;
-                        user.setAttribute('class', 'class="w3-bar-item w3-button"')
                     }
+
+                    if (userId === myUserId) {
+
+                        user.setAttribute('class', 'class="w3-bar-item w3-button w3-hover-white"');
+                        user.setAttribute("style", "padding:16px;")
+                        user.innerHTML += " ✎"
+                        user.onclick = editName;
+                        ownUserElement = user;
+                    } else {
+                        user.setAttribute("style", "display:block; padding:16px;")
+                    } 
                     
                     usersElement.appendChild(user);
                 }
             }
+    }
+}
+
+var ownUserElement : HTMLAnchorElement;
+function editName() {
+    var name = prompt("Please enter your name");
+    if (name != null) {
+        document.cookie = name;
+        ownUserElement.innerHTML = name;
+        firebase.database().ref(roomId).child("users").update( {
+            [myUserId]: name}, function(error: Error | null){
+
+                if (error) {
+                    console.error(error);
+                    return;
+                }
+                
+                console.log("Updated name of " + myUserId + " to " + name );
+            }
+        );
     }
 }

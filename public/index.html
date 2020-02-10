@@ -4,6 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
   <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
@@ -20,12 +21,13 @@
   <!-- Sidebar/menu -->
   <nav class="w3-sidebar w3-black w3-collapse w3-top w3-large w3-padding" style="z-index:3;width:300px;font-weight:bold;"
     id="mySidebar">
-    <a href="javascript:void(0)" onclick="w3_close()" class="w3-button w3-hide-large w3-display-topleft"
-      style="width:100%;font-size:22px">Close Panel</a>
+    <a href="javascript:void(0)" onclick="w3_close()" class="w3-button w3-hide-large"
+      style="width:100%;font-size:22px"><i class="fa fa-times"></i></a>
+      <h2>Syncwatch</h2><hr>
     <div class="w3-container">
-      <h3 id="roomNumber" class="w3-padding-64"></h3>
+      <h3 id="roomNumber" class="w3-padding-16"></h3>
     </div>
-    <div id="users" class="w3-bar-block"></div>
+    <div id="users" class="w3-bar-block w3-padding-64"></div>
   </nav>
 
   <!-- Top menu on small screens -->
