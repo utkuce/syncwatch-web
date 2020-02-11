@@ -45,7 +45,29 @@ function videoEvent() {
 }
 
 export function setPause(value: boolean) {
-  value ? player.pause() : player.play();
+
+  if (value) {
+    player.pause();
+  } else {
+
+    var promise = player.play();
+    if (promise !== undefined) {
+
+      promise.then(function() {
+
+        const autoplay_warning = document.getElementById("autoplay_warning");
+        if(autoplay_warning)
+          autoplay_warning.setAttribute("style", "display: none;")
+    
+      }).catch(function(error) {
+        
+        const autoplay_warning = document.getElementById("autoplay_warning");
+        if(autoplay_warning)
+          autoplay_warning.setAttribute("style", "display: block; color:white; text-align: center;")
+    
+      });
+    }
+  }
 }
 
 export function seekTo(seconds: number) {
