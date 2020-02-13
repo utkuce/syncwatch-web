@@ -38,13 +38,8 @@ export function create() {
             console.log('Room created on firebase database');
 
             join(roomId);
-
-            //tui.setRoomLink(roomLink);
         }
-
     );
-
-    return roomId.split('-')[1];
 }
 
 var lastSentEvent : any;
@@ -91,7 +86,6 @@ export function join(rId: string) {
     myUserId = uniqid('user-');
     var roomRef = firebase.database().ref(roomId);
 
-
     roomRef.child("users").update( {
             [myUserId]: userName}, function(error: Error | null){
 
@@ -101,6 +95,14 @@ export function join(rId: string) {
                 }
                 
                 console.log("Joined the room as " + myUserId + "(" + userName + ")" );
+
+                const roomNumber: string = roomId.split('-')[1];
+                window.location.hash = "r=" + roomNumber;
+
+                const roomNumberElement = document.getElementById('roomNumber');
+                if (roomNumberElement)
+                    roomNumberElement.innerHTML = 'Joined room ' + roomNumber;
+
                 listenRoom(roomRef);
             }
     );
