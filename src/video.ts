@@ -6,7 +6,7 @@ import 'videojs-youtube'
 
 const getVideoId = require('get-video-id');
 
-const defaultSrc = "https://archive.org/download/ElephantsDream/ed_hd.mp4";
+const defaultSrc = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
 var player = videojs("video1", 
   { 
     controls: true,
