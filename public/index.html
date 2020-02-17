@@ -45,7 +45,15 @@
   
       <div style="text-align: right; color:white; margin-bottom: 10px;">
 
-        <input class="w3-button w3-theme-l1 w3-border" style="float: left;"id="fileSelector" type="file" accept="video/*"/>
+        <div style="display: inline; float: left;">
+          <input class="w3-button w3-theme-l1 w3-border" id="fileSelector" type="file" accept="video/*"/>
+          <p class="w3-tooltip" style="display:inline; position: relative;"><i class="far fa-question-circle"></i>
+            <span style="position:absolute;top:18px;z-index: 1; width: 300px;" class="w3-text w3-tag">
+              Each participant needs to select a copy of the same file from their local machine
+            </span>
+          </p> 
+        </div>
+        
         <form id="form" style=" display: inline; top:1px">
           <input class="w3-input w3-theme-l1 w3-border" type="text" id="sourceInput"
             style="display: unset; max-width: 400px; position:relative; top:1px" placeholder="The URL of the media file or YouTube URL">
