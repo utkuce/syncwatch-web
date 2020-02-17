@@ -4,7 +4,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+		integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
   <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
@@ -42,12 +43,16 @@
   <div class="w3-main" style="margin-left:340px;margin-right:40px">
     <div class="w3-container" style="margin-top:20px">
   
-      <form id="form" style="text-align: right;">
-        <input class="w3-input w3-theme-l1 w3-border" type="text" id="sourceInput"
-          style="display: unset; max-width: 400px" placeholder="The URL of the media file or YouTube URL">
-        <button type="submit" class="w3-button w3-theme-l1 w3-border" media="(max-width: 600px)"
-          style="position:relative; bottom:1px;">Stream</button>
-      </form><br>
+      <div style="text-align: right; color:white; margin-bottom: 10px;">
+
+        <input class="w3-button w3-theme-l1 w3-border" style="float: left;"id="fileSelector" type="file" accept="video/*"/>
+        <form id="form" style=" display: inline; top:1px">
+          <input class="w3-input w3-theme-l1 w3-border" type="text" id="sourceInput"
+            style="display: unset; max-width: 400px; position:relative; top:1px" placeholder="The URL of the media file or YouTube URL">
+          <button type="submit" class="w3-button w3-theme-l1 w3-border" media="(max-width: 600px)">Stream</button>
+        </form>
+
+      </div>
       <p id="autoplay_warning" style="display: none;">
         <span style='color:orange'>WARNING:</span> Please manually interact with the video player once <br>or give autoplay permission for the page to function properly.
       </p>

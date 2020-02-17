@@ -98,6 +98,17 @@ export function setSource(sourceURL: string) {
   
 }
 
+var fileSelector  = document.getElementById('fileSelector');
+fileSelector?.addEventListener('change', handleFileSelect, false)
+
+function handleFileSelect (evt : any) {
+
+  var files = evt.target.files // FileList object
+  var videoFile = files[0];
+
+  setSource(URL.createObjectURL(videoFile));
+}
+
 //import * as torrenthandler from '../core/torrenthandler'
 /*
 export function start(sourceURL: string) {
