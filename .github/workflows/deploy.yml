@@ -21,7 +21,10 @@ jobs:
     - run: npm run build --if-present
       env:
         CI: true
-        
+    
+    - name: CNAME
+      run: touch dist/CNAME && echo "syncwatch.live" > dist/CNAME
+      
     - uses: crazy-max/ghaction-github-pages@v1
       with:
           target_branch: gh-pages
@@ -29,3 +32,4 @@ jobs:
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+    
