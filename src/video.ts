@@ -3,6 +3,7 @@ import {isEqual} from 'lodash';
 
 import videojs from 'video.js'
 import 'videojs-youtube'
+import VTTConverter from 'srt-webvtt';
 
 const getVideoId = require('get-video-id');
 
@@ -109,36 +110,30 @@ function handleFileSelect (evt : any) {
   setSource(URL.createObjectURL(videoFile));
 }
 
-//import * as torrenthandler from '../core/torrenthandler'
-/*
-export function start(sourceURL: string) {
+var subNumber = 1;
+export function addSubtitles(file: File, ext: string) {
 
-  if (sourceURL.startsWith("magnet:")) {
+  console.log("Subtitle file added: " + file.name);
 
-    console.log("Received magnet link, forwarding to torrent handler");
-    //torrenthandler.start(url);
-
-  } else {
-
-    console.log("Starting video player with source url: " + sourceURL);
-    appRef.current?.load(sourceURL);
+  if (ext === "srt") {
+    const vttConverter = new VTTConverter(file);
+    vttConverter.getURL().then(function(url) { 
+  
+      addTextTrack(url);
+  
+    }).catch(function(err) {
+      console.error(err);
+    });
+  } else if (ext === "vtt") {
+    addTextTrack(URL.createObjectURL(file));
   }
 }
 
-export function setSource(sourceURL: string, sendToPeer: boolean = true) {
-
-  var currentSource : string = sourceURL.trim();
-  if (currentSource.startsWith("%HOMEPATH%") && process.env.HOMEPATH) {
-    console.log("Expanding variable %HOMEPATH%");
-    currentSource = currentSource.replace("%HOMEPATH%", process.env.HOMEPATH);
-  }
-
-  //tui.setVideoSource(currentSource);
-
-  if (sendToPeer) {
-    room.sendData({ "sourceURL": currentSource});
-  }
-
-  start(currentSource);
+function addTextTrack(url: string) {
+  player.addRemoteTextTrack({ 
+    src: url, 
+    kind: "subtitles", 
+    label: "subtitle" + subNumber++, 
+    mode: "showing" 
+  }, false);
 }
-*/
