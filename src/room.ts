@@ -87,7 +87,7 @@ export function join(rId: string) {
     var roomRef = firebase.database().ref(roomId);
 
     roomRef.child("users").update( {
-            [myUserId]: userName}, function(error: Error | null){
+            [myUserId]: {"name": userName}}, function(error: Error | null){
 
                 if (error) {
                     console.error(error);
@@ -120,15 +120,15 @@ export function join(rId: string) {
 function listenRoom(roomRef: firebase.database.Reference) {
 
     roomRef.on("child_added", function(snapshot: any, prevChildKey?: string|null) {
-        handleData(snapshot)
+        onDatabaseUpdate(snapshot)
     });
 
     roomRef.on("child_changed", function(snapshot: any, prevChildKey?: string|null) {
-        handleData(snapshot)
+        onDatabaseUpdate(snapshot)
     });
 }
 
-function handleData(snapshot : any) {
+function onDatabaseUpdate(snapshot : any) {
 
     var eventType : string = snapshot.key;
     var data = snapshot.val();
@@ -159,57 +159,79 @@ function handleData(snapshot : any) {
         case "users":
 
             //{"users":{"user-0":"name1","user-1":"name2","user-3":"name3"}
+            updateUsersDisplay(data);
 
-            var usersElement = document.getElementById('users');
-            if (usersElement) {
-           
-                usersElement.innerHTML = '';
-          
-                for (var key in data) {
 
-                    var userId = key;
-                    var userName = data[key];
-                    var user = document.createElement('a');                  
+    }
+}
 
-                    if (userName === "Guest") {
-                        user.innerHTML = "Guest " + userId.split('-')[1];
-                    } else {
-                        user.innerHTML = userName;
-                    }
+function updateUsersDisplay(data: any) {
 
-                    if (userId === myUserId) {
+    var usersElement = document.getElementById('users');
+    if (usersElement) {
+   
+        usersElement.innerHTML = '';
+  
+        for (var key in data) {
 
-                        user.setAttribute('class', 'class="w3-bar-item w3-button w3-hover-white"');
-                        user.setAttribute("style", "padding:16px;")
-                        user.innerHTML += " ✎"
-                        user.onclick = editName;
-                        ownUserElement = user;
-                    } else {
-                        user.setAttribute("style", "display:block; padding:16px;")
-                    } 
-                    
-                    usersElement.appendChild(user);
-                }
+            var userId = key;
+            var userName = data[key]["name"];
+            var user = document.createElement('a');                  
+
+            if (userName === "Guest") {
+                user.innerHTML = "Guest " + userId.split('-')[1];
+            } else {
+                user.innerHTML = userName;
             }
+
+            if (userId === myUserId) {
+
+                user.setAttribute('class', 'class="w3-bar-item w3-button w3-hover-white"');
+                user.setAttribute("style", "padding:16px;")
+                user.innerHTML += " ✎"
+                user.onclick = editName;
+                ownUserElement = user;
+
+            } else {
+                user.setAttribute("style", "display:block; padding:16px;")
+            } 
+            
+            usersElement.appendChild(user);
+        }
     }
 }
 
 var ownUserElement : HTMLAnchorElement;
 function editName() {
+
     var name = prompt("Please enter your name");
     if (name != null) {
+
         document.cookie = name;
         ownUserElement.innerHTML = name;
-        firebase.database().ref(roomId).child("users").update( {
-            [myUserId]: name}, function(error: Error | null){
-
+        firebase.database().ref(roomId).child("users/" + myUserId + "/name")
+            .set(name, function(error: Error | null){
                 if (error) {
                     console.error(error);
                     return;
-                }
-                
+                }   
                 console.log("Updated name of " + myUserId + " to " + name );
             }
         );
     }
 }
+
+/*
+export function addVideoHash(hash: string, fileName: string) {
+    
+    firebase.database().ref(roomId).child("users/" + myUserId + "/localFile")
+        .set({"hash": hash, "fileName":fileName}, function(error: Error | null){
+            if (error) {
+                console.error(error);
+                return;
+            }
+            console.log("Added local file hash under " + myUserId);
+        }
+    );
+}
+*/
