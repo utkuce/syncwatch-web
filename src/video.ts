@@ -93,10 +93,7 @@ export function setSource(sourceURL: string) {
     src: sourceURL
   });
 
-  console.log("video source is set to " + sourceURL);
-  setPause(true);
-  seekTo(1);
-  
+  console.log("video source is set to " + sourceURL); 
 }
 
 var fileSelector  = document.getElementById('fileSelector');
