@@ -3,6 +3,8 @@ import {isEqual} from 'lodash';
 
 import videojs from 'video.js'
 import 'videojs-youtube'
+import 'videojs-hotkeys'
+
 import VTTConverter from 'srt-webvtt';
 
 const getVideoId = require('get-video-id');
@@ -13,7 +15,13 @@ var player = videojs("video1",
     controls: true,
     preload: 'auto',
     "fluid": true,
-    "techOrder": ["html5", "youtube"]
+    "techOrder": ["html5", "youtube"],
+    plugins:{
+      hotkeys:{
+        enableModifiersForNumbers: false,
+        alwaysCaptureHotkeys: true
+      }
+    }
   });
 
 var syncEvents = ["seeked", "play", "pause"]

@@ -32,6 +32,7 @@
     "uniqid": "^5.2.0",
     "video-extensions": "^1.1.0",
     "video.js": "^7.6.6",
+    "videojs-hotkeys": "^0.2.25",
     "videojs-youtube": "^2.6.1"
   }
 }
