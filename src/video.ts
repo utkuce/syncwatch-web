@@ -87,6 +87,8 @@ export function setSource(sourceURL: string) {
   var provider: string = 'video/mp4';
   if (getVideoId(sourceURL).service === "youtube")
     provider = 'video/youtube';
+  else if (sourceURL.endsWith(".m3u8"))
+    provider = "application/x-mpegURL";
   
   player.src({
     type: provider,
