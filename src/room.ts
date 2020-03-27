@@ -76,11 +76,11 @@ export function join(rId: string) {
     roomId = rId;
     var userName = "Guest";
 
-    if (document.cookie) {
-        console.log("Cookie: " + document.cookie)
-        userName = document.cookie;
+    if (localStorage['username']) {
+        console.log("Username is set to: " + localStorage['username'])
+        userName = localStorage['username'];
     } else {
-        document.cookie = userName;
+        localStorage['username'] = userName;
     }
 
     myUserId = uniqid('user-');
@@ -207,7 +207,7 @@ function editName() {
     var name = prompt("Please enter your name");
     if (name != null) {
 
-        document.cookie = name;
+        localStorage['username'] = name;
         ownUserElement.innerHTML = name;
         firebase.database().ref(roomId).child("users/" + myUserId + "/name")
             .set(name, function(error: Error | null){
