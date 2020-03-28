@@ -1,4 +1,5 @@
 import "../public/snackbar.css"
+import "../public/default.css"
 
 var pjson = require('../package.json');
 console.log("Version " + pjson.version);
