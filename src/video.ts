@@ -1,4 +1,4 @@
-import {sendData} from './room'
+import {sendData, setReadyState} from './room'
 import {isEqual} from 'lodash';
 
 import videojs from 'video.js'
@@ -29,6 +29,7 @@ syncEvents.forEach(function (entry) {
   player.on(entry, function () {
     console.log(entry + " event")
     videoEvent();
+    sendReadyState();
   });
 });
 
@@ -53,16 +54,28 @@ function videoEvent() {
   }
 }
 
+function sendReadyState() {
+  setTimeout(function() {
+    if (player.readyState() < 4) {
+      setReadyState(false);
+    } else {
+      setReadyState(true);
+    }
+  }, 1000);
+}
+
 export function setPause(value: boolean) {
 
-  if (value) {
+  if (value === true) {
     player.pause();
   } else {
 
-    var promise = player.play();
-    if (promise !== undefined) {
+    sendReadyState();
 
-      promise.then(function() {
+    var playPromise = player.play();
+    if (playPromise !== undefined) {
+
+      playPromise.then(function() {
 
         const autoplay_warning = document.getElementById("autoplay_warning");
         if(autoplay_warning)
@@ -118,7 +131,7 @@ function handleFileSelect (evt : any) {
 }
 
 var subNumber = 1;
-export function addSubtitles(file: File, ext: string) {
+export function addSubtitleFile(file: File, ext: string) {
 
   console.log("Subtitle file added: " + file.name);
 

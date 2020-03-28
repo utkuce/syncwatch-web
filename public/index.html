@@ -13,11 +13,11 @@
   <title>Syncwatch</title>
   <style>
     body,h1,h2,h3,h4,h5 {font-family: "Poppins", sans-serif}
-    body {font-size:16px;}
+    body {font-size:16px; background-color: #1a1a1a;}
   </style>
 </head>
 
-<body style="background-color: #1a1a1a;">
+<body>
   
   <!-- Sidebar/menu -->
   <nav class="w3-sidebar w3-black w3-collapse w3-top w3-large w3-padding" style="z-index:3;width:300px;font-weight:bold;"
@@ -60,7 +60,7 @@
 
       </div>
       <p id="autoplay_warning" style="display: none;">
-        <span style='color:orange'>WARNING:</span> Please manually interact with the video player once <br>or give autoplay permission for the page to function properly.
+        <span style='color:orange'>WARNING:</span> Please manually interact with the video player once <br>or give autoplay permission to the page for it to function properly.
       </p>
       <video id="video1" class="video-js vjs-default-skin vjs-big-play-centered" width="1280px" height="720px"
         style="width: 100%; height: 100%;">
@@ -73,6 +73,11 @@
         </p>
       </video>
     </div>
+  </div>
+
+  <div id="snackbar"> 
+    <strong>Users out of sync...</strong> 
+    <div id="waitingUsersList">[user list]</div>
   </div>
 
 </body>
@@ -88,6 +93,19 @@
     document.getElementById("mySidebar").style.display = "none";
     document.getElementById("myOverlay").style.display = "none";
   }
+
+  function showSnackbar() {
+    // Get the snackbar DIV
+    var x = document.getElementById("snackbar");
+
+    // Add the "show" class to DIV
+    x.className = "show";
+  } 
+
+  function hideSnackbar(){ 
+    x.className = x.className.replace("show", ""); 
+  }
+
 </script>
 
 </html>

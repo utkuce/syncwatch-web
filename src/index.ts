@@ -1,3 +1,5 @@
+import "../public/snackbar.css"
+
 var pjson = require('../package.json');
 console.log("Version " + pjson.version);
 
@@ -29,7 +31,7 @@ dragDrop('body', function (files: any) {
         video.setSource(URL.createObjectURL(files[0]));
         
     } else if (["vtt", "srt"].includes(ext)) {
-        video.addSubtitles(files[0], ext);
+        video.addSubtitleFile(files[0], ext);
     }
 });
 
