@@ -42,6 +42,10 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: path.join(publicPath , 'index.html'),
       filename: 'index.html'
+    }),
+    new HtmlWebpackPlugin({
+      template: path.join(publicPath , 'help.html'),
+      filename: 'help.html'
     })
   ]
 };
