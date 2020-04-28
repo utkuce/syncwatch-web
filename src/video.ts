@@ -8,7 +8,11 @@ import VTTConverter from 'srt-webvtt';
 const getVideoId = require('get-video-id');
 
 const defaultSrc = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
-const player = new Plyr('#video1');
+const player = new Plyr('#video1', {
+  invertTime:false,
+  keyboard: { focused: true, global: true },
+  settings: []
+});
 
 var syncEvents = ["seeked", "play", "pause"]
 syncEvents.forEach(function (entry: any) {
@@ -20,10 +24,17 @@ syncEvents.forEach(function (entry: any) {
 
 setSource(defaultSrc);
 
+var currentProvider : string;
 function getVideoState() {
+
+  // youtube player needs low precision to sync correctly
+  var position_ = player.currentTime;
+  if ( currentProvider === "youtube") 
+    position_ = Math.floor(position_);
+
   return { 
       "videoState": { 
-          "position": Math.floor(player.currentTime), 
+          "position": position_, 
           "paused": player.paused
       } 
   };
@@ -98,6 +109,7 @@ export function setSource(sourceURL: string) {
     ]
   };
 
+  currentProvider = provider_;
   console.log("Video source is set to " + src_ + " (provider: " + provider_ + ")"); 
 }
 
@@ -113,7 +125,7 @@ function handleFileSelect (evt : any) {
 
   setSource(URL.createObjectURL(videoFile));
 }
-
+/*
 var subNumber = 1;
 export function addSubtitleFile(file: File, ext: string) {
 

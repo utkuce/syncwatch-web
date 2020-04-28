@@ -70,12 +70,6 @@
       <video id="video1" width="1280px" height="720px" style="width: 100%; height: 100%;"></video>
     </div>
   </div>
-
-  <div id="snackbar"> 
-    <strong>Users potentially out of sync...</strong> 
-    <div id="waitingUsersList">[user list]</div>
-  </div>
-
 </body>
 
 <script>
@@ -89,19 +83,6 @@
     document.getElementById("mySidebar").style.display = "none";
     document.getElementById("myOverlay").style.display = "none";
   }
-
-  function showSnackbar() {
-    // Get the snackbar DIV
-    var x = document.getElementById("snackbar");
-
-    // Add the "show" class to DIV
-    x.className = "show";
-  } 
-
-  function hideSnackbar(){ 
-    x.className = x.className.replace("show", ""); 
-  }
-
 </script>
 
 </html>
