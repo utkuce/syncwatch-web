@@ -162,7 +162,6 @@ function onDatabaseUpdate(snapshot : any) {
 
             //{"users":{"user-0":"name1","user-1":"name2","user-3":"name3"}
             updateUsersDisplay(data);
-            checkReadyStates(data);
     }
 }
 
@@ -202,39 +201,6 @@ function updateUsersDisplay(data: any) {
     }
 }
 
-function checkReadyStates(data: any) {
-
-    var snackbar = document.getElementById("snackbar");
-    var allReady: boolean = true;
-
-    var waitingUsersList = document.getElementById('waitingUsersList');
-    if (waitingUsersList) waitingUsersList.innerHTML = "";
-    for (var key in data) {
-
-        var readyState = data[key]["readyState"];
-        if (readyState !== undefined && !readyState) {
-            
-            allReady = false;
-
-            var waitingPeer = "Waiting for " + data[key]["name"];
-            console.log(waitingPeer);
-    
-            var user = document.createElement('ul');
-            user.innerHTML = data[key]["name"];
-            waitingUsersList?.appendChild(user);
-        }
-    }
-
-    if (snackbar) {
-        if (allReady) {
-            console.log("All peers ready");
-            snackbar.className = "";
-        } else {
-            snackbar.className = "show";
-        }
-    }
-}
-
 var ownUserElement : HTMLAnchorElement;
 function editName() {
 
@@ -254,31 +220,3 @@ function editName() {
         );
     }
 }
-
-export function setReadyState(value: boolean) {
-
-    firebase.database().ref(roomId).child("users/" + myUserId + "/readyState")
-        .set(value, function(error: Error | null){
-            if (error) {
-                console.error(error);
-                return;
-            }
-            console.log("readyState value for " + myUserId + " is set to " + value);
-        }
-    );
-}
-
-/*
-export function addVideoHash(hash: string, fileName: string) {
-    
-    firebase.database().ref(roomId).child("users/" + myUserId + "/localFile")
-        .set({"hash": hash, "fileName":fileName}, function(error: Error | null){
-            if (error) {
-                console.error(error);
-                return;
-            }
-            console.log("Added local file hash under " + myUserId);
-        }
-    );
-}
-*/

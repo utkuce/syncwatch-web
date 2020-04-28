@@ -29,7 +29,6 @@ syncEvents.forEach(function (entry) {
   player.on(entry, function () {
     console.log(entry + " event")
     videoEvent();
-    sendReadyState();
   });
 });
 
@@ -54,23 +53,11 @@ function videoEvent() {
   }
 }
 
-function sendReadyState() {
-  setTimeout(function() {
-    if (player.readyState() < 4) {
-      setReadyState(false);
-    } else {
-      setReadyState(true);
-    }
-  }, 1000);
-}
-
 export function setPause(value: boolean) {
 
   if (value === true) {
     player.pause();
   } else {
-
-    sendReadyState();
 
     var playPromise = player.play();
     if (playPromise !== undefined) {
