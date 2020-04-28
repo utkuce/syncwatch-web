@@ -23,36 +23,12 @@ var dragDrop = require('drag-drop');
 var videoExtensions = require('video-extensions');
 dragDrop('body', function (files: any) {
 
-    //calculateHash(files[0]);
-
     var ext = files[0].name.substr(files[0].name.lastIndexOf('.') + 1);
     if (videoExtensions.includes(ext)){
 
-        console.log("Setting local video: " + files[0].name)
         video.setSource(URL.createObjectURL(files[0]));
         
     } else if (["vtt", "srt"].includes(ext)) {
-        video.addSubtitleFile(files[0], ext);
+        //video.addSubtitleFile(files[0], ext);
     }
 });
-
-/*
-import CryptoJS from 'crypto-js'
-function calculateHash(file: File) {
-
-    console.log("Calculating hash for " + file.name);
-    
-    var reader = new FileReader();
-    reader.addEventListener('load',function () {
-
-        var hash = CryptoJS.MD5(CryptoJS.enc.Latin1.parse(String(this.result)));
-        var md5 = hash.toString(CryptoJS.enc.Hex)
-        var output = "MD5 (" + file.name + ") = " + md5;
-
-        console.log(output);
-        room.addVideoHash(md5, file.name);
-    });
-    
-    reader.readAsBinaryString(file);
-}
-*/

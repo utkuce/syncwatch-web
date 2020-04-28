@@ -1,6 +1,6 @@
 {
   "name": "syncwatch-web",
-  "version": "0.9.7",
+  "version": "0.10.0",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "serve": "webpack-dev-server --watch",
@@ -29,12 +29,10 @@
     "firebase": "^7.8.0",
     "get-video-id": "^3.1.4",
     "lodash": "^4.17.15",
+    "plyr": "^3.5.10",
     "query-string": "^6.10.1",
     "srt-webvtt": "github:imshaikot/srt-webvtt",
     "uniqid": "^5.2.0",
-    "video-extensions": "^1.1.0",
-    "video.js": "^7.6.6",
-    "videojs-hotkeys": "^0.2.25",
-    "videojs-youtube": "^2.6.1"
+    "video-extensions": "^1.1.0"
   }
 }

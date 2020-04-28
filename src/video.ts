@@ -1,31 +1,17 @@
-import {sendData, setReadyState} from './room'
+import {sendData} from './room'
 import {isEqual} from 'lodash';
 
-import videojs from 'video.js'
-import 'videojs-youtube'
-import 'videojs-hotkeys'
+import Plyr from 'plyr';
 
 import VTTConverter from 'srt-webvtt';
 
 const getVideoId = require('get-video-id');
 
 const defaultSrc = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
-var player = videojs("video1", 
-  { 
-    controls: true,
-    preload: 'auto',
-    "fluid": true,
-    "techOrder": ["html5", "youtube"],
-    plugins:{
-      hotkeys:{
-        enableModifiersForNumbers: false,
-        alwaysCaptureHotkeys: true
-      }
-    }
-  });
+const player = new Plyr('#video1');
 
 var syncEvents = ["seeked", "play", "pause"]
-syncEvents.forEach(function (entry) {
+syncEvents.forEach(function (entry: any) {
   player.on(entry, function () {
     console.log(entry + " event")
     videoEvent();
@@ -37,8 +23,8 @@ setSource(defaultSrc);
 function getVideoState() {
   return { 
       "videoState": { 
-          "position": Math.floor(player.currentTime()), 
-          "paused": player.paused()
+          "position": Math.floor(player.currentTime), 
+          "paused": player.paused
       } 
   };
 }
@@ -80,7 +66,7 @@ export function setPause(value: boolean) {
 }
 
 export function seekTo(seconds: number) {
-  player.currentTime(seconds);
+  player.currentTime = seconds;
 }
 
 export function sourceInput() {
@@ -92,20 +78,31 @@ export function sourceInput() {
 export function setSource(sourceURL: string) {
 
   // The URL of the media file (or YouTube/Vimeo URL).
-  var provider: string = 'video/mp4';
-  if (getVideoId(sourceURL).service === "youtube")
-    provider = 'video/youtube';
-  else if (sourceURL.endsWith(".m3u8"))
-    provider = "application/x-mpegURL";
-  
-  player.src({
-    type: provider,
-    src: sourceURL
-  });
+  var provider_ = getVideoId(sourceURL).service;
+  var src_ = sourceURL;
 
-  console.log("video source is set to " + sourceURL); 
+  if (provider_ === "youtube")
+    src_ = sourceURL.split('watch?v=')[1]
+  else if (provider_ === "vimeo")
+    src_ = sourceURL.split("vimeo.com/")[1];
+  else 
+    provider_ = "html5";
+
+  player.source = {
+    type: 'video',
+    sources : [
+      {
+        provider: provider_,
+        src: src_
+      }
+    ]
+  };
+
+  console.log("Video source is set to " + src_ + " (provider: " + provider_ + ")"); 
 }
 
+
+/*
 var fileSelector  = document.getElementById('fileSelector');
 fileSelector?.addEventListener('change', handleFileSelect, false)
 
@@ -137,10 +134,10 @@ export function addSubtitleFile(file: File, ext: string) {
 }
 
 function addTextTrack(url: string) {
-  player.addRemoteTextTrack({ 
+  vjs_player.addRemoteTextTrack({ 
     src: url, 
     kind: "subtitles", 
     label: "subtitle" + subNumber++, 
     mode: "showing" 
   }, false);
-}
+}*/
