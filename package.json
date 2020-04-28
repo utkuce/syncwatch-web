@@ -1,6 +1,6 @@
 {
   "name": "syncwatch-web",
-  "version": "0.10.0",
+  "version": "0.11.1",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "serve": "webpack-dev-server --watch",
