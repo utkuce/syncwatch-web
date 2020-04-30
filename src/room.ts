@@ -128,13 +128,12 @@ function listenRoom(roomRef: firebase.database.Reference) {
     });
 }
 
-var receivedData = 0;
+export var eventCooldown = false;
 function onDatabaseUpdate(snapshot : any) {
 
     var eventType : string = snapshot.key;
     var data = snapshot.val();
 
-    console.log("received data " + receivedData++);
     lastReceivedEvent = {[eventType]: data};
     if (isEqual(lastReceivedEvent, lastSentEvent))
         return;
@@ -146,6 +145,12 @@ function onDatabaseUpdate(snapshot : any) {
         case "videoState":
 
             // { "videoState": { "position": vid.currentTime, "paused": vid.paused } }
+
+            // stop sending video state events for 200ms 
+            // after receiving one to prevent feedback loops
+            eventCooldown = true;
+            setTimeout(()=>{eventCooldown=false}, 200);
+
             video.seekTo(parseFloat(data["position"]));
             video.setPause(data["paused"]);
 

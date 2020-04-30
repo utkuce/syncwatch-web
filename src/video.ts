@@ -1,4 +1,4 @@
-import {sendData} from './room'
+import {sendData, eventCooldown} from './room'
 import {isEqual} from 'lodash';
 
 import Plyr from 'plyr';
@@ -46,7 +46,8 @@ function videoEvent() {
   if (!isEqual(event, lastEvent)) { // prevent duplicate events
       lastEvent = event;
       console.log("video event: " + JSON.stringify(event));
-      sendData(event);
+      if (!eventCooldown)
+        sendData(event);
   }
 }
 
