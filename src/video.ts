@@ -107,7 +107,11 @@ export function setSource(sourceURL: string) {
   };
 
   currentProvider = provider_;
-  console.log("Video source is set to " + src_ + " (provider: " + provider_ + ")"); 
+  var videoSrc = "Video source: " + src_ + " (type: " + provider_ + ")";
+  console.log(videoSrc);
+  var videoSourceElement = document.getElementById("video_source");
+  if (videoSourceElement)
+    videoSourceElement.innerHTML = videoSrc;
 }
 
 
