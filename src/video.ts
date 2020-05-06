@@ -107,8 +107,7 @@ export function setSource(sourceURL: string) {
   };
 
   currentProvider = provider_;
-  var videoSrc = "Video source: " + src_ + " (type: " + provider_ + ")";
-  console.log(videoSrc);
+  var videoSrc = "Video source: <i>" + src_ + "</i> (type: " + provider_ + ")";
   var videoSourceElement = document.getElementById("video_source");
   if (videoSourceElement)
     videoSourceElement.innerHTML = videoSrc;
@@ -126,7 +125,7 @@ function handleFileSelect (evt : any) {
 
   setSource(URL.createObjectURL(videoFile));
 }
-/*
+
 var subNumber = 1;
 export function addSubtitleFile(file: File, ext: string) {
 
