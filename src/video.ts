@@ -11,7 +11,7 @@ const defaultSrc = "https://commondatastorage.googleapis.com/gtv-videos-bucket/s
 const player = new Plyr('#video1', {
   invertTime:false,
   keyboard: { focused: true, global: true },
-  settings: []
+  speed: {selected: 1, options:[]}
 });
 
 var syncEvents = ["seeked", "play", "pause"]
