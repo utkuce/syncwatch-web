@@ -11,14 +11,23 @@ const defaultSrc = "https://commondatastorage.googleapis.com/gtv-videos-bucket/s
 const player = new Plyr('#video1', {
   invertTime:false,
   keyboard: { focused: true, global: true },
-  speed: {selected: 1, options:[]}
+  speed: {selected: 1, options:[]},
 });
 
 var syncEvents = ["seeked", "play", "pause"]
+var firstPlay: boolean = true;
+
 syncEvents.forEach(function (entry: any) {
+  
   player.on(entry, function () {
     console.log(entry + " event")
     videoEvent();
+
+    // workaround for youtube getting muted after .play() is called for the first time
+    if (entry === "play" && firstPlay) {
+      player.muted = false; 
+      firstPlay = false;
+    }
   });
 });
 
