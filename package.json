@@ -1,6 +1,6 @@
 {
   "name": "syncwatch-web",
-  "version": "0.11.4",
+  "version": "0.11.5",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "serve": "webpack-dev-server --watch",
@@ -22,11 +22,11 @@
     "typescript": "^3.7.5",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10",
-    "webpack-dev-server": "^3.10.2"
+    "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {
     "drag-drop": "^6.0.0",
-    "firebase": "^7.8.0",
+    "firebase": "^7.15.0",
     "get-video-id": "^3.1.4",
     "lodash": "^4.17.15",
     "plyr": "^3.5.10",
