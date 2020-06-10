@@ -3,8 +3,6 @@ import {isEqual} from 'lodash';
 
 import Plyr from 'plyr';
 
-import VTTConverter from 'srt-webvtt';
-
 const getVideoId = require('get-video-id');
 
 const defaultSrc = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
@@ -94,6 +92,7 @@ export function sourceInput() {
   const sourceInput = <HTMLInputElement> document.getElementById('sourceInput');
   setSource(sourceInput.value);
   sendData({"sourceURL": sourceInput.value});
+  sourceInput.value = "";
 }
 
 export function setSource(sourceURL: string) {
@@ -121,44 +120,3 @@ export function setSource(sourceURL: string) {
   if (videoSourceElement)
     videoSourceElement.innerHTML = videoSrc;
 }
-
-
-/*
-var fileSelector  = document.getElementById('fileSelector');
-fileSelector?.addEventListener('change', handleFileSelect, false)
-
-function handleFileSelect (evt : any) {
-
-  var files = evt.target.files // FileList object
-  var videoFile = files[0];
-
-  setSource(URL.createObjectURL(videoFile));
-}
-
-var subNumber = 1;
-export function addSubtitleFile(file: File, ext: string) {
-
-  console.log("Subtitle file added: " + file.name);
-
-  if (ext === "srt") {
-    const vttConverter = new VTTConverter(file);
-    vttConverter.getURL().then(function(url) { 
-  
-      addTextTrack(url);
-  
-    }).catch(function(err) {
-      console.error(err);
-    });
-  } else if (ext === "vtt") {
-    addTextTrack(URL.createObjectURL(file));
-  }
-}
-
-function addTextTrack(url: string) {
-  vjs_player.addRemoteTextTrack({ 
-    src: url, 
-    kind: "subtitles", 
-    label: "subtitle" + subNumber++, 
-    mode: "showing" 
-  }, false);
-}*/
