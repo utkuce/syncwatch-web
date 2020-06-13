@@ -69,12 +69,24 @@ function onDatabaseUpdate(snapshot : any) {
 
             // { "videoState": { "position": vid.currentTime, "paused": vid.paused } }
 
-            // stop sending video state events for 500ms 
-            // after receiving one to prevent feedback loops
+            // stop sending video state events for 500ms after receiving one
+            // to prevent feedback loops but if it's longer than that sending back
+            // the  same event is what we want to prevent desyncronization
             eventCooldown = true;
             setTimeout(()=>{eventCooldown=false}, 500);
 
-            video.seekTo(parseFloat(data["position"]));
+            // position comes in format seconds:epoch_time 
+            // where epoch time is the original moment of event
+            // so we can adjust the position for the time passed since the event
+            // unless the video is paused, because then it shouldn't be adjusted
+
+            var position : number = parseFloat(data["position"].split(":")[0]);
+            var timeDifference: number = (Date.now() - parseFloat(data["position"].split(":")[1]))/1000;
+            var adjustedPosition : number = position + timeDifference;
+            console.log("Adjusted position: " + timeDifference + " seconds");
+
+            // the order is important for youtube player
+            data["paused"] ? video.seekTo(position) : video.seekTo(adjustedPosition);
             video.setPause(data["paused"]);
 
             break;

@@ -40,7 +40,7 @@ function getVideoState() {
 
   return { 
       "videoState": { 
-          "position": player.currentTime, 
+          "position": player.currentTime + ":" + Date.now(), 
           "paused": player.paused
       } 
   };
@@ -48,8 +48,11 @@ function getVideoState() {
 
 var lastEvent : any;
 function videoEvent() {
+
   var event = getVideoState();
-  if (!isEqual(event, lastEvent)) { // prevent duplicate events
+  
+  // filter duplicate events coming from the video player
+  if (!isEqual(event, lastEvent)) {
       lastEvent = event;
       console.log("video event: " + JSON.stringify(event));
       if (!eventCooldown)
