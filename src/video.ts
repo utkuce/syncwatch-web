@@ -1,4 +1,9 @@
-import {sendData, eventCooldown} from './room'
+// ****************************************************************************
+// functions related to the video player events and controling the video player
+// ****************************************************************************
+
+import {sendData, eventCooldown} from './sync'
+import * as ui from './interface'
 import {isEqual} from 'lodash';
 
 import Plyr from 'plyr';
@@ -31,17 +36,11 @@ syncEvents.forEach(function (entry: any) {
 
 setSource(defaultSrc);
 
-var currentProvider : string;
 function getVideoState() {
-
-  // youtube player needs low precision to sync correctly
-  var position_ = player.currentTime;
-  if ( currentProvider === "youtube") 
-    position_ = Math.floor(position_);
 
   return { 
       "videoState": { 
-          "position": position_, 
+          "position": player.currentTime, 
           "paused": player.paused
       } 
   };
@@ -60,39 +59,15 @@ function videoEvent() {
 
 export function setPause(value: boolean) {
 
-  if (value === true) {
-    player.pause();
-  } else {
-
-    var playPromise = player.play();
-    if (playPromise !== undefined) {
-
-      playPromise.then(function() {
-
-        const autoplay_warning = document.getElementById("autoplay_warning");
-        if(autoplay_warning)
-          autoplay_warning.setAttribute("style", "display: none;")
-    
-      }).catch(function(error) {
-        
-        const autoplay_warning = document.getElementById("autoplay_warning");
-        if(autoplay_warning)
-          autoplay_warning.setAttribute("style", "display: block; color:white; text-align: center;")
-    
-      });
-    }
+  var playPromise = value? player.pause() : player.play();
+  if (playPromise !== undefined) {
+    ui.autoPlayWarning(playPromise);
   }
 }
 
 export function seekTo(seconds: number) {
+  console.log("Seeking to " + seconds);
   player.currentTime = seconds;
-}
-
-export function sourceInput() {
-  const sourceInput = <HTMLInputElement> document.getElementById('sourceInput');
-  setSource(sourceInput.value);
-  sendData({"sourceURL": sourceInput.value});
-  sourceInput.value = "";
 }
 
 export function setSource(sourceURL: string) {
@@ -114,9 +89,5 @@ export function setSource(sourceURL: string) {
     ]
   };
 
-  currentProvider = provider_;
-  var videoSrc = "Video source: <i>" + src_ + "</i> (type: " + provider_ + ")";
-  var videoSourceElement = document.getElementById("video_source");
-  if (videoSourceElement)
-    videoSourceElement.innerHTML = videoSrc;
+  ui.setVideoSourceDisplay(src_, provider_);
 }
