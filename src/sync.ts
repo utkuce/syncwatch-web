@@ -6,7 +6,7 @@ import * as firebase from 'firebase/app'
 import {isEqual} from 'lodash';
 
 import * as video from './video'
-import {roomId, myUserId} from './room'
+import {roomId, myUserId, lastInRoom} from './room'
 import {updateUsersDisplay} from './interface'
 
 var lastSentEvent : any;
@@ -99,6 +99,9 @@ function onDatabaseUpdate(snapshot : any) {
         case "users":
 
             //{"users":{"user-0":"name1","user-1":"name2","user-3":"name3"}
+            var numUsers: number = Object.keys(data).length;
+            lastInRoom(numUsers === 1);
+
             updateUsersDisplay(data, roomId, myUserId);
     }
 }

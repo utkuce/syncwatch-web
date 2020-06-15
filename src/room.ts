@@ -84,3 +84,13 @@ export function join(rid: string, uid: string) {
         }
     ); 
 }
+
+export function lastInRoom(last: boolean) {
+
+    // cleanup the room before leaving if you're the last person
+    var roomRef = firebase.database().ref(roomId);
+    ["created", "videoState", "sourceURL"].forEach(function(node: any){
+        var onDisc =  roomRef.child(node).onDisconnect();
+        last ? onDisc.remove() : onDisc.cancel();
+    });
+}
