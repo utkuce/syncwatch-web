@@ -50,13 +50,8 @@ export function updateUsersDisplay(data: any, roomId: string, myUserId: string) 
             var userId = key;
             var userName = data[key]["name"];
             var user = document.createElement('a');                  
-
-            if (userName === "Guest") {
-                user.innerHTML = "Guest " + userId.split('-')[1];
-            } else {
-                user.innerHTML = userName;
-            }
-
+            user.innerHTML = userName;
+         
             if (userId === myUserId) {
 
                 user.setAttribute('class', 'class="w3-bar-item w3-button w3-hover-white"');

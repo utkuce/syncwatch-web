@@ -3,7 +3,6 @@
 // *************************************************
 
 import * as firebase from 'firebase/app'
-import 'firebase/auth'
 import 'firebase/database'
 
 import uniqid from 'uniqid'
@@ -25,11 +24,11 @@ firebase.initializeApp(firebaseConfig);
 
 export var roomId: string;
 
-export function create() {
+export function create(uid: string) {
 
     roomId = uniqid('room-');
     var roomRef = firebase.database().ref(roomId);
-    roomRef.set(null,
+    roomRef.child("created").set(Date.now(),
 
         function(error: Error | null){
 
@@ -39,16 +38,16 @@ export function create() {
             }
             
             console.log('Room created on firebase database');
-
-            join(roomId);
+            console.log("Joining " + roomId);
+            join(roomId, uid);
         }
     );
 }
 
 export var myUserId: string;
-export function join(rId: string) {
+export function join(rid: string, uid: string) {
 
-    roomId = rId;
+    roomId = rid;
     var userName = "Guest";
 
     if (localStorage['username']) {
@@ -56,25 +55,26 @@ export function join(rId: string) {
         userName = localStorage['username'];
     } else {
         localStorage['username'] = userName;
-    }
+    }     
 
-    myUserId = uniqid('user-');
+    myUserId = uid;
+
     var roomRef = firebase.database().ref(roomId);
 
     roomRef.child("users").update( {
             [myUserId]: {"name": userName}}, function(error: Error | null){
-
+        
                 if (error) {
                     console.error(error);
                     return;
                 }
-                
-                console.log("Joined the room as " + myUserId + "(" + userName + ")" );
+                        
+                console.log("Joined the room as " + myUserId + " (" + userName + ")" );
                 ui.setRoomNumber(roomId);
                 listenRoom(roomRef);
             }
     );
-
+        
     roomRef.child("users/" + myUserId).onDisconnect().remove(
         function(error: Error | null) {
             if (error) {
@@ -82,5 +82,5 @@ export function join(rId: string) {
                 return;
             }
         }
-    );
+    ); 
 }

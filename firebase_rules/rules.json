@@ -1,0 +1,25 @@
+{
+  "rules": {
+    "$room_id": {
+      ".read": "data.child('users').hasChild(auth.uid)",
+      "created": {
+        ".validate": "newData.isNumber()",
+        ".write": "auth.uid !== null"
+      },
+      "users": {
+        "$user_id": {
+          ".validate": "newData.child('name').isString()",
+          ".write": "$user_id === auth.uid"
+        }
+      },
+      "videoState": {
+        ".validate": "root.child($room_id).exists() && newData.child('paused').isBoolean()",
+        ".write": "root.child($room_id).child('users').hasChild(auth.uid)"
+      },
+      "sourceURL": {
+        ".validate": "root.child($room_id).exists() && newData.isString()",
+        ".write": "root.child($room_id).child('users').hasChild(auth.uid)"
+      }
+    }
+  }
+}

@@ -42,12 +42,10 @@ export function sendData(data: any) { // play-pause,seek,url
 // handling when a node on the database is updated or created
 export function listenRoom(roomRef: firebase.database.Reference) {
 
-    roomRef.on("child_added", function(snapshot: any, prevChildKey?: string|null) {
-        onDatabaseUpdate(snapshot)
-    });
-
-    roomRef.on("child_changed", function(snapshot: any, prevChildKey?: string|null) {
-        onDatabaseUpdate(snapshot)
+    ["child_added", "child_changed"].forEach(function(eventType: any) {
+        roomRef.on(eventType, function(snapshot: any, prevChildKey?: string|null) {
+            onDatabaseUpdate(snapshot);
+        });
     });
 }
 
