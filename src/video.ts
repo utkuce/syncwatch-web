@@ -15,6 +15,7 @@ const player = new Plyr('#video1', {
   invertTime:false,
   keyboard: { focused: true, global: true },
   speed: {selected: 1, options:[]},
+  ratio: "16:9"
 });
 
 var syncEvents = ["seeked", "play", "pause"]
@@ -63,7 +64,7 @@ function videoEvent() {
 export function setPause(value: boolean) {
 
   var playPromise = value? player.pause() : player.play();
-  if (playPromise !== undefined) {
+  if (playPromise) {
     ui.autoPlayWarning(playPromise);
   }
 }
