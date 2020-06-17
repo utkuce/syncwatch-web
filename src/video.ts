@@ -26,12 +26,6 @@ syncEvents.forEach(function (entry: any) {
   player.on(entry, function () {
     console.log(entry + " event")
     videoEvent();
-
-    // workaround for youtube getting muted after .play() is called for the first time
-    if (entry === "play" && firstPlay) {
-      player.muted = false; 
-      firstPlay = false;
-    }
   });
 });
 
@@ -62,6 +56,12 @@ function videoEvent() {
 }
 
 export function setPause(value: boolean) {
+
+  // workaround for youtube getting muted after .play() is called for the first time
+  if (firstPlay) {
+    player.muted = false; 
+    firstPlay = false;
+  }
 
   var playPromise = value? player.pause() : player.play();
   if (playPromise) {
