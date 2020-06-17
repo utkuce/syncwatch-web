@@ -29,6 +29,12 @@ syncEvents.forEach(function (entry: any) {
   });
 });
 
+var videoReady = false;
+player.on("ready", ()=>{
+  console.log("Player ready");
+  videoReady = true;
+})
+
 setSource(defaultSrc);
 
 function getVideoState() {
@@ -55,26 +61,47 @@ function videoEvent() {
   }
 }
 
-export function setPause(value: boolean) {
+export async function setPause(value: boolean) {
+  
+  await until((_: any) => videoReady);
 
-  // workaround for youtube getting muted after .play() is called for the first time
-  if (firstPlay) {
-    player.muted = false; 
-    firstPlay = false;
-  }
-
+  console.log("setPause " + value);
   var playPromise = value? player.pause() : player.play();
-  if (playPromise) {
+  if (playPromise && value) {
     ui.autoPlayWarning(playPromise);
   }
 }
 
-export function seekTo(seconds: number) {
+export async function seekTo(seconds: number) {
+    
+  await until((_: any) => videoReady);
+  
   console.log("Seeking to " + seconds);
   player.currentTime = seconds;
+
+  // workaround for youtube getting muted .play() is called 
+  // after .currentTime for the first time
+  // see https://github.com/sampotts/plyr/issues/1527
+  if (firstPlay) {
+    player.muted = false;
+    firstPlay = false;
+  }
+}
+
+function until(conditionFunction: Function) {
+
+  const poll = (resolve: () => any) => {
+    if(conditionFunction()) resolve();
+    else setTimeout((_: any) => poll(resolve), 50);
+  }
+
+  return new Promise(poll);
 }
 
 export function setSource(sourceURL: string) {
+
+  videoReady = false;
+  firstPlay = true;
 
   // The URL of the media file (or YouTube/Vimeo URL).
   var provider_ = getVideoId(sourceURL).service;

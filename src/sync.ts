@@ -70,6 +70,7 @@ function onDatabaseUpdate(snapshot : any) {
             // stop sending video state events for 500ms after receiving one
             // to prevent feedback loops but if it's longer than that sending back
             // the  same event is what we want to prevent desyncronization
+
             eventCooldown = true;
             setTimeout(()=>{eventCooldown=false}, 500);
 
