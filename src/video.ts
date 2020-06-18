@@ -79,7 +79,7 @@ export async function seekTo(seconds: number) {
   console.log("Seeking to " + seconds);
   player.currentTime = seconds;
 
-  // workaround for youtube getting muted .play() is called 
+  // workaround for youtube getting muted when .play() is called 
   // after .currentTime for the first time
   // see https://github.com/sampotts/plyr/issues/1527
   if (firstPlay) {
