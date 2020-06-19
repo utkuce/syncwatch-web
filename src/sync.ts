@@ -12,7 +12,27 @@ import {updateUsersDisplay} from './interface'
 var lastSentEvent : any;
 var lastReceivedEvent : any;
 
-export function sendData(data: any) { // play-pause,seek,url
+export function sendVideoSource(sourceURL: string) {
+    sendData({"sourceURL": sourceURL});
+}
+
+var lastEvent : any;
+export function sendVideoState(paused: boolean, position: number) {
+
+    var event = { "videoState": { 
+        "position": position + ":" + Date.now(), 
+        "paused": paused }} 
+  
+    // filter duplicate events coming from the video player
+    if (!isEqual(event, lastEvent)) {
+        lastEvent = event;
+        console.log("video event: " + JSON.stringify(event));
+        if (!eventCooldown)
+            sendData(event);
+  }
+}
+
+function sendData(data: any) { // play-pause,seek,url
 
     // abort if the room id is not set yet
     if (roomId == null)

@@ -2,15 +2,11 @@
 // functions related to the video player events and controling the video player
 // ****************************************************************************
 
-import {sendData, eventCooldown} from './sync'
+import {sendVideoState} from './sync'
 import * as ui from './interface'
-import {isEqual} from 'lodash';
 
 import Plyr from 'plyr';
 
-const getVideoId = require('get-video-id');
-
-const defaultSrc = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
 const player = new Plyr('#video1', {
   invertTime:false,
   keyboard: { focused: true, global: true },
@@ -19,13 +15,9 @@ const player = new Plyr('#video1', {
 });
 
 var syncEvents = ["seeked", "play", "pause"]
-var firstPlay: boolean = true;
-
 syncEvents.forEach(function (entry: any) {
-  
   player.on(entry, function () {
-    console.log(entry + " event")
-    videoEvent();
+    sendVideoState(player.paused, player.currentTime);
   });
 });
 
@@ -35,31 +27,8 @@ player.on("ready", ()=>{
   videoReady = true;
 })
 
+const defaultSrc = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
 setSource(defaultSrc);
-
-function getVideoState() {
-
-  return { 
-      "videoState": { 
-          "position": player.currentTime + ":" + Date.now(), 
-          "paused": player.paused
-      } 
-  };
-}
-
-var lastEvent : any;
-function videoEvent() {
-
-  var event = getVideoState();
-  
-  // filter duplicate events coming from the video player
-  if (!isEqual(event, lastEvent)) {
-      lastEvent = event;
-      console.log("video event: " + JSON.stringify(event));
-      if (!eventCooldown)
-        sendData(event);
-  }
-}
 
 export async function setPause(value: boolean) {
   
@@ -72,6 +41,7 @@ export async function setPause(value: boolean) {
   }
 }
 
+var firstPlay: boolean = true;
 export async function seekTo(seconds: number) {
     
   await until((_: any) => videoReady);
@@ -104,7 +74,7 @@ export function setSource(sourceURL: string) {
   firstPlay = true;
 
   // The URL of the media file (or YouTube/Vimeo URL).
-  var provider_ = getVideoId(sourceURL).service;
+  var provider_ = require('get-video-id')(sourceURL).service;
   var src_ = sourceURL;
 
   if (provider_ === undefined)

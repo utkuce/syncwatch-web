@@ -3,7 +3,7 @@
 // ************************************************
 
 import * as firebase from 'firebase/app'
-import {sendData} from './sync'
+import {sendVideoSource} from './sync'
 import * as video from './video'
 
 const streamButton = <HTMLButtonElement> document.getElementById('streamButton');
@@ -94,7 +94,7 @@ function editName(roomId: string, myUserId: string) {
 export function handleSourceInput() {
     const sourceInput = <HTMLInputElement> document.getElementById('sourceInput');
     video.setSource(sourceInput.value);
-    sendData({"sourceURL": sourceInput.value});
+    sendVideoSource(sourceInput.value);
     sourceInput.value = "";
   }
 
