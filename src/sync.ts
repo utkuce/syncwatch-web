@@ -19,16 +19,16 @@ export function sendVideoSource(sourceURL: string) {
 var lastEvent : any;
 export function sendVideoState(paused: boolean, position: number) {
 
-    var event = { "videoState": { 
-        "position": position + ":" + Date.now(), 
-        "paused": paused }} 
+    var event = { "videoState": { "position": String(position), "paused": paused }} 
   
     // filter duplicate events coming from the video player
     if (!isEqual(event, lastEvent)) {
         lastEvent = event;
         console.log("video event: " + JSON.stringify(event));
-        if (!eventCooldown)
+        if (!eventCooldown) {
+            event["videoState"]["position"] += ":" + Date.now()
             sendData(event);
+        }
   }
 }
 
