@@ -2,8 +2,8 @@
 // functions related to updating the user interface
 // ************************************************
 
-import * as firebase from 'firebase/app'
 import {sendVideoSource} from './sync'
+import * as room from './room'
 import * as video from './video'
 
 const streamButton = <HTMLButtonElement> document.getElementById('streamButton');
@@ -58,7 +58,7 @@ export function updateUsersDisplay(data: any, roomId: string, myUserId: string) 
                 user.setAttribute("style", "padding:16px;")
                 user.innerHTML += " ✎"
                 user.addEventListener('click', function(){
-                    editName(roomId, myUserId)
+                    editName();
                 });
                 ownUserElement = user;
 
@@ -72,22 +72,14 @@ export function updateUsersDisplay(data: any, roomId: string, myUserId: string) 
 }
 
 var ownUserElement : HTMLAnchorElement;
-function editName(roomId: string, myUserId: string) {
+function editName() {
 
     var name = prompt("Please enter your name");
     if (name != null) {
 
         localStorage['username'] = name;
         ownUserElement.innerHTML = name;
-        firebase.database().ref(roomId).child("users/" + myUserId + "/name")
-            .set(name, function(error: Error | null){
-                if (error) {
-                    console.error(error);
-                    return;
-                }   
-                console.log("Updated name of " + myUserId + " to " + name );
-            }
-        );
+        room.updateUsername(name);
     }
 }
 

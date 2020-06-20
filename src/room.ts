@@ -94,3 +94,15 @@ export function lastInRoom(last: boolean) {
         last ? onDisc.remove() : onDisc.cancel();
     });
 }
+
+export function updateUsername(name: string) {
+    firebase.database().ref(roomId).child("users/" + myUserId + "/name")
+        .set(name, function(error: Error | null){
+            if (error) {
+                console.error(error);
+                return;
+            }   
+            console.log("Updated name of " + myUserId + " to " + name );
+        }
+    );
+}
