@@ -123,6 +123,6 @@ function onDatabaseUpdate(snapshot : any) {
             var numUsers: number = Object.keys(data).length;
             lastInRoom(numUsers === 1);
 
-            updateUsersDisplay(data, roomId, myUserId);
+            updateUsersDisplay(data, myUserId);
     }
 }

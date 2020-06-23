@@ -38,7 +38,7 @@ export function setRoomNumber(roomId: string) {
         roomNumberElement.innerHTML = 'Joined room ' + roomNumber;
 }
 
-export function updateUsersDisplay(data: any, roomId: string, myUserId: string) {
+export function updateUsersDisplay(data: any, myUserId: string) {
 
     var usersElement = document.getElementById('users');
     if (usersElement) {
