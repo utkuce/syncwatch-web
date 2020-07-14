@@ -83,6 +83,16 @@ export function join(rid: string, uid: string) {
             }
         }
     ); 
+
+    var connectedRef = firebase.database().ref(".info/connected");
+    connectedRef.on("value", function(snap) {
+        if (snap.val() !== true) {
+            ui.connectionLost();
+        } else {
+            ui.setRoomNumber(roomId);
+        }
+    });
+
 }
 
 export function lastInRoom(last: boolean) {

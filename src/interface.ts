@@ -40,8 +40,21 @@ export function setRoomNumber(roomId: string) {
     window.location.hash = "r=" + roomNumber;
 
     const roomNumberElement = document.getElementById('roomNumber');
-    if (roomNumberElement)
+    if (roomNumberElement) {
         roomNumberElement.innerHTML = 'Joined room ' + roomNumber;
+        roomNumberElement.style.color = "white";
+    }
+        
+}
+
+export function connectionLost() {
+    const roomNumberElement = document.getElementById('roomNumber');
+    if (roomNumberElement) {
+        roomNumberElement.innerHTML = 'Connection lost!';
+        roomNumberElement.style.color = "red";
+    }
+        
+
 }
 
 export function updateUsersDisplay(data: any, myUserId: string) {
