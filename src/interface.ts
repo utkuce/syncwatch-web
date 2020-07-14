@@ -7,6 +7,13 @@ import * as room from './room'
 import * as video from './video'
 import * as webtorrent from './webtorrent'
 
+var pjson = require('../package.json');
+const titleName = document.getElementById("titleName");
+if (titleName)
+    titleName.innerHTML += "<br>v" + pjson.version;
+
+document.getElementsByTagName("title")[0].innerHTML += " v" + pjson.version;
+
 const streamButton = <HTMLButtonElement> document.getElementById('streamButton');
 streamButton.onclick = handleSourceInput;
 
@@ -43,8 +50,7 @@ export function setRoomNumber(roomId: string) {
     if (roomNumberElement) {
         roomNumberElement.innerHTML = 'Joined room ' + roomNumber;
         roomNumberElement.style.color = "white";
-    }
-        
+    }        
 }
 
 export function connectionLost() {
@@ -53,8 +59,6 @@ export function connectionLost() {
         roomNumberElement.innerHTML = 'Connection lost!';
         roomNumberElement.style.color = "red";
     }
-        
-
 }
 
 export function updateUsersDisplay(data: any, myUserId: string) {
