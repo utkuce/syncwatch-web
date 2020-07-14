@@ -16,7 +16,7 @@
         ".validate": "root.child($room_id).exists() && newData.child('paused').isBoolean()",
         ".write": "root.child($room_id).child('users').hasChild(auth.uid)"
       },
-      "sourceURL": {
+      "videoSource": {
         ".validate": "root.child($room_id).exists() && newData.isString()",
         ".write": "root.child($room_id).child('users').hasChild(auth.uid)"
       }

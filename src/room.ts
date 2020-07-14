@@ -89,13 +89,14 @@ export function lastInRoom(last: boolean) {
 
     // cleanup the room before leaving if you're the last person
     var roomRef = firebase.database().ref(roomId);
-    ["created", "videoState", "sourceURL"].forEach(function(node: any){
+    ["created", "videoState", "videoSource"].forEach(function(node: any){
         var onDisc =  roomRef.child(node).onDisconnect();
         last ? onDisc.remove() : onDisc.cancel();
     });
 }
 
 export function updateUsername(name: string) {
+    
     firebase.database().ref(roomId).child("users/" + myUserId + "/name")
         .set(name, function(error: Error | null){
             if (error) {

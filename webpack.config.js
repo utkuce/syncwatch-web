@@ -47,5 +47,6 @@ module.exports = {
       template: path.join(publicPath , 'help.html'),
       filename: 'help.html'
     })
-  ]
+  ],
+  node: {fs: 'empty' } 
 };

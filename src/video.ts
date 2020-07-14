@@ -4,6 +4,7 @@
 
 import {sendVideoState} from './sync'
 import * as ui from './interface'
+import * as webtorrent from './webtorrent'
 
 import Plyr from 'plyr';
 
@@ -80,15 +81,19 @@ export function setSource(sourceURL: string) {
   if (provider_ === undefined)
     provider_ = "html5";
 
-  player.source = {
-    type: 'video',
-    sources : [
-      {
-        provider: provider_,
-        src: src_
-      }
-    ]
-  };
+  if (sourceURL.startsWith("magnet:")) {
+    webtorrent.handleTorrent(sourceURL);
+  } else {
+    player.source = {
+      type: 'video',
+      sources : [
+        {
+          provider: provider_,
+          src: src_
+        }
+      ]
+    };
+  }
 
   ui.setVideoSourceDisplay(src_, provider_);
 }

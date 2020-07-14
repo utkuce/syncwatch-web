@@ -13,7 +13,7 @@ var lastSentEvent : any;
 var lastReceivedEvent : any;
 
 export function sendVideoSource(sourceURL: string) {
-    sendData({"sourceURL": sourceURL});
+    sendData({"videoSource": sourceURL});
 }
 
 var lastEvent : any;
@@ -24,7 +24,7 @@ export function sendVideoState(paused: boolean, position: number) {
     // filter duplicate events coming from the video player
     if (!isEqual(event, lastEvent)) {
         lastEvent = event;
-        console.log("video event: " + JSON.stringify(event));
+        console.log("video event: ", event);
         if (!eventCooldown) {
             event["videoState"]["position"] += ":" + Date.now()
             sendData(event);
@@ -54,7 +54,7 @@ function sendData(data: any) { // play-pause,seek,url
                 return;
             }
             
-            console.log("Sent: " + JSON.stringify(data));
+            console.log("Sent: ", data);
         }
     ); 
 }
@@ -79,7 +79,7 @@ function onDatabaseUpdate(snapshot : any) {
     if (isEqual(lastReceivedEvent, lastSentEvent))
         return;
 
-    console.log("Received: " + JSON.stringify(lastReceivedEvent));
+    console.log("Received data: ", lastReceivedEvent);
 
     switch (eventType) {
 
@@ -110,16 +110,16 @@ function onDatabaseUpdate(snapshot : any) {
 
             break;
 
-        case "sourceURL":
+        case "videoSource":
 
-            // { "sourceURL": url}
-            video.setSource(data);
+            // { "videoSource": source}
+            video.setSource(data)
 
             break;
         
         case "users":
 
-            //{"users":{"user-0":"name1","user-1":"name2","user-3":"name3"}
+            //{"users":{userId1:"name1", userId2:"name2", userId3:"name3", ... }
             var numUsers: number = Object.keys(data).length;
             lastInRoom(numUsers === 1);
 

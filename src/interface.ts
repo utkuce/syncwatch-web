@@ -5,6 +5,7 @@
 import {sendVideoSource} from './sync'
 import * as room from './room'
 import * as video from './video'
+import * as webtorrent from './webtorrent'
 
 const streamButton = <HTMLButtonElement> document.getElementById('streamButton');
 streamButton.onclick = handleSourceInput;
@@ -24,6 +25,11 @@ var videoExtensions = require('video-extensions');
 dragDrop('body', function (files: any) {
     var ext = files[0].name.substr(files[0].name.lastIndexOf('.') + 1);
     if (videoExtensions.includes(ext)){
+
+        // TODO: validate video encoding for browser
+        console.log("Setting local video: " + files[0].name);
+       
+        webtorrent.seed(files[0]);
         video.setSource(URL.createObjectURL(files[0])); 
     }
 });
@@ -113,4 +119,10 @@ export function autoPlayWarning(playPromise: Promise<void>) {
           autoplay_warning.setAttribute("style", "display: block; color:white; text-align: center;")
     
       });
+}
+
+var torrentElement = document.getElementById("torrent_progress");
+export function updateTorrentElement(value: string) {
+    if (torrentElement)
+        torrentElement.innerHTML = value;
 }

@@ -1,6 +1,6 @@
 {
   "name": "syncwatch-web",
-  "version": "0.12.6",
+  "version": "0.13.0",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "serve": "webpack-dev-server --host 0.0.0.0 --watch",
@@ -26,12 +26,14 @@
   },
   "dependencies": {
     "drag-drop": "^6.0.0",
+    "end-of-stream": "^1.4.1",
     "firebase": "^7.15.1",
     "get-video-id": "^3.1.4",
     "lodash": "^4.17.15",
     "plyr": "^3.6.2",
     "query-string": "^6.13.1",
     "uniqid": "^5.2.0",
-    "video-extensions": "^1.1.0"
+    "video-extensions": "^1.1.0",
+    "webtorrent": "^0.108.6"
   }
 }
