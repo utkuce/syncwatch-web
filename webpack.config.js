@@ -41,11 +41,13 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: path.join(publicPath , 'index.html'),
-      filename: 'index.html'
+      filename: 'index.html',
+      favicon: 'public/favicon.ico',
     }),
     new HtmlWebpackPlugin({
       template: path.join(publicPath , 'help.html'),
-      filename: 'help.html'
+      filename: 'help.html',
+      favicon: 'public/favicon.ico'
     })
   ],
   node: {fs: 'empty' } 
