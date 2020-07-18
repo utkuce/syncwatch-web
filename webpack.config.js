@@ -42,12 +42,12 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: path.join(publicPath , 'index.html'),
       filename: 'index.html',
-      favicon: 'public/favicon.ico',
+      favicon: 'public/favicon.png',
     }),
     new HtmlWebpackPlugin({
       template: path.join(publicPath , 'help.html'),
       filename: 'help.html',
-      favicon: 'public/favicon.ico'
+      favicon: 'public/favicon.png'
     })
   ],
   node: {fs: 'empty' } 
