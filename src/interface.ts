@@ -56,7 +56,7 @@ export function setRoomNumber(roomId: string) {
 export function connectionLost() {
     const roomNumberElement = document.getElementById('roomNumber');
     if (roomNumberElement) {
-        roomNumberElement.innerHTML = 'Connection lost!';
+        roomNumberElement.innerHTML = 'Not connected!';
         roomNumberElement.style.color = "red";
     }
 }

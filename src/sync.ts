@@ -121,7 +121,7 @@ function onDatabaseUpdate(snapshot : any) {
 
             //{"users":{userId1:"name1", userId2:"name2", userId3:"name3", ... }
             var numUsers: number = Object.keys(data).length;
-            //lastInRoom(numUsers === 1);
+            lastInRoom(numUsers === 1);
 
             updateUsersDisplay(data, myUserId);
     }

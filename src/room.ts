@@ -61,20 +61,30 @@ export function join(rid: string, uid: string) {
 
     var roomRef = firebase.database().ref(roomId);
 
+    addUser(roomRef, userName);
+    connectedCheck(roomRef, userName);
+}
+
+function addUser(roomRef: any, userName: string) {
+
     roomRef.child("users").update( {
-            [myUserId]: {"name": userName}}, function(error: Error | null){
-        
-                if (error) {
-                    console.error(error);
-                    return;
-                }
-                        
-                console.log("Joined the room as " + myUserId + " (" + userName + ")" );
-                ui.setRoomNumber(roomId);
-                listenRoom(roomRef);
+        [myUserId]: {"name": userName}}, function(error: Error | null){
+    
+            if (error) {
+                console.error(error);
+                return;
             }
+                    
+            console.log("Joined the room as " + myUserId + " (" + userName + ")" );
+            onDisconnect(roomRef);
+            ui.setRoomNumber(roomId);
+            listenRoom(roomRef);
+        }
     );
-        
+}
+
+function onDisconnect(roomRef: any) {
+
     roomRef.child("users/" + myUserId).onDisconnect().remove(
         function(error: Error | null) {
             if (error) {
@@ -83,16 +93,25 @@ export function join(rid: string, uid: string) {
             }
         }
     ); 
+}
+
+function connectedCheck(roomRef: any, userName: string) {
 
     var connectedRef = firebase.database().ref(".info/connected");
     connectedRef.on("value", function(snap) {
+
+        console.log("Connected status: ", snap.val())
         if (snap.val() !== true) {
+
             ui.connectionLost();
+            firebase.database().goOnline();
+            onDisconnect(roomRef);
+
         } else {
-            ui.setRoomNumber(roomId);
+
+            addUser(roomRef, userName);
         }
     });
-
 }
 
 export function lastInRoom(last: boolean) {
