@@ -62,6 +62,9 @@ function sendData(data: any) { // play-pause,seek,url
 // handling when a node on the database is updated or created
 export function listenRoom(roomRef: firebase.database.Reference) {
 
+    // default video will be replaced as soon as a new source is received
+    video.showDefaultVideo();
+
     ["child_added", "child_changed"].forEach(function(eventType: any) {
         roomRef.on(eventType, function(snapshot: any, prevChildKey?: string|null) {
             onDatabaseUpdate(snapshot);

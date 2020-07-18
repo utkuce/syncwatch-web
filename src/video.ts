@@ -28,8 +28,10 @@ player.on("ready", ()=>{
   videoReady = true;
 })
 
-const defaultSrc = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
-setSource(defaultSrc);
+export function showDefaultVideo() {
+  const defaultSrc = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
+  setSource(defaultSrc);
+}
 
 export async function setPause(value: boolean) {
   
