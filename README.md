@@ -16,8 +16,8 @@ They also need to be http streamable, i.e., encoded with <code>-movflags +fastst
 Note that a webpage which has a video on it isn't necessarily the link to that video.
 
 #### Local video files
-Drag-and-drop a video file encoded with a supported format by the browser.<br>
-In this case everyone in the room needs to drag-and-drop their local copy of the same file before starting.
+Drag-and-drop a video file encoded with a supported format by the browser and it will be shared via 
+[webtorrent](https://webtorrent.io/) to everyone in the room.
 
 ## Build
 
