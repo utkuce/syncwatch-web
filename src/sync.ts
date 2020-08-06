@@ -3,7 +3,7 @@
 // *****************************************************************************
 
 import * as firebase from 'firebase/app'
-import {isEqual} from 'lodash';
+import isEqual from 'lodash/isEqual';
 
 import * as video from './video'
 import {roomId, myUserId, lastInRoom} from './room'
