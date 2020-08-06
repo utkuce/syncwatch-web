@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
 		integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-  <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
   <link rel="stylesheet" href="https://cdn.plyr.io/3.5.10/plyr.css" />
   <title>Syncwatch</title>
@@ -20,6 +19,14 @@
     body {
         font-size:16px; background-color: #1a1a1a;
     }
+
+    .panel{
+      background-color: #0a0a0a; color: white;
+    }
+
+    input, button {
+      background-color: #272727; color:white;
+    }
   </style>
   
 </head>
@@ -27,7 +34,7 @@
 <body>
   
   <!-- Sidebar/menu -->
-  <nav class="w3-sidebar w3-black w3-collapse w3-top w3-large w3-padding" style="z-index:3;width:300px;font-weight:bold;"
+  <nav class="w3-sidebar panel w3-collapse w3-top w3-large w3-padding" style="z-index:3;width:300px;font-weight:bold;"
     id="mySidebar">
     <a href="javascript:void(0)" onclick="w3_close()" class="w3-button w3-hide-large"
       style="width:100%;font-size:22px"><i class="fa fa-times"></i></a>
@@ -40,8 +47,8 @@
   </nav>
 
   <!-- Top menu on small screens -->
-  <header class="w3-container w3-hide-large w3-black w3-xlarge w3-padding">
-    <a href="javascript:void(0)" class="w3-button w3-black w3-margin-right" onclick="w3_open()">☰</a>
+  <header class="w3-container w3-hide-large panel w3-xlarge w3-padding">
+    <a href="javascript:void(0)" class="w3-button panel w3-margin-right" onclick="w3_open()">☰</a>
     <span id="titleName"> Syncwatch </span>
   </header>
 
@@ -57,10 +64,10 @@
           <a href="help.html" target="_blank"> How to use <i class="far fa-question-circle"></i></a> 
         </p> 
 
-        <div style=" display: inline; top:1px; margin-left: 20px;">
-          <input class="w3-input w3-theme-l1 w3-border" type="text" id="sourceInput"
+        <div style="display: inline;  margin-left: 20px;">
+          <input class="w3-input" type="text" id="sourceInput"
             style="display: unset; max-width: 420px; position:relative; top:1px" placeholder="URL of a media file or YouTube/Vimeo URL">
-          <button id="streamButton" class="w3-hide-small w3-button w3-theme-l1 w3-border">Stream</button>
+          <button id="streamButton" class="w3-hide-small w3-button w3-border">Stream</button>
         </div>
 
       </div>
