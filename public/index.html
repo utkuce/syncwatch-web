@@ -8,7 +8,7 @@
 		integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
-  <link rel="stylesheet" href="https://cdn.plyr.io/3.5.10/plyr.css" />
+  <link href="https://vjs.zencdn.net/7.10.2/video-js.css" rel="stylesheet" />
   <title>Syncwatch</title>
 
   <style>
@@ -74,7 +74,7 @@
       <p id="autoplay_warning" style="display: none;">
         <span style='color:orange'>WARNING:</span> Please manually interact with the video player once <br>or give autoplay permission to the page for it to function properly.
       </p>
-      <video id="video1" width="1280px" height="720px" style="width: 100%; height: 100%;"></video>
+      <video id="my-player" class="video-js vjs-big-play-centered" width="1280px" height="720px" style="width: 100%; height: 100%;"></video>
       <div id="video_source"style="color: grey; white-space: nowrap; text-overflow: ellipsis;  overflow: hidden;"></div>
       <div id="torrent_progress" style="color: white;"></div>
     </div>

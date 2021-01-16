@@ -67,6 +67,7 @@ export function join(rid: string, uid: string) {
 
 function addUser(roomRef: any, userName: string) {
 
+    onUserLeave(roomRef);
     roomRef.child("users").update( {
         [myUserId]: {"name": userName}}, function(error: Error | null){
     
@@ -76,14 +77,13 @@ function addUser(roomRef: any, userName: string) {
             }
                     
             console.log("Joined the room as " + myUserId + " (" + userName + ")" );
-            onDisconnect(roomRef);
             ui.setRoomNumber(roomId);
             listenRoom(roomRef);
         }
     );
 }
 
-function onDisconnect(roomRef: any) {
+function onUserLeave(roomRef: any) {
 
     roomRef.child("users/" + myUserId).onDisconnect().remove(
         function(error: Error | null) {
@@ -105,7 +105,7 @@ function connectedCheck(roomRef: any, userName: string) {
 
             ui.connectionLost();
             firebase.database().goOnline();
-            onDisconnect(roomRef);
+            onUserLeave(roomRef);
 
         } else {
 
