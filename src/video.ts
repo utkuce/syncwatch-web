@@ -49,10 +49,24 @@ export async function setPause(value: boolean) {
   }
 
   console.log("setPause " + value);
-  var playPromise = value? player.pause() : player.play();
-  if (playPromise && value) {
-    //ui.autoPlayWarning(playPromise);
+
+  var promise : any = value ? player.pause() : player.play();
+
+  if (promise !== undefined) {
+    promise.then(function() {
+      // Autoplay started!
+    }).catch(function(error: any) {
+
+      if (!value)
+      {
+        player.muted(true);
+        ui.autoPlayWarning();
+        player.play();
+      }
+
+    });
   }
+
 }
 
 var firstPlay: boolean = true;

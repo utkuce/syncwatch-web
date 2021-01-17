@@ -7,6 +7,8 @@ import * as room from './room'
 import * as video from './video'
 import * as webtorrent from './webtorrent'
 
+import toastr from 'toastr'
+
 var pjson = require('../package.json');
 const titleName = document.getElementById("titleName");
 if (titleName)
@@ -121,21 +123,18 @@ export function setVideoSourceDisplay(src: string, provider: string) {
     videoSourceElement.innerHTML = videoSrc;
 }
 
-export function autoPlayWarning(playPromise: Promise<void>) {
+export function autoPlayWarning() {
+    console.log("Displaying autoplay warning");
 
-    playPromise.then(function() {
+    toastr.options = {
+        "closeButton": false,
+        "progressBar": true,
+        "positionClass": "toast-bottom-right",
+        "preventDuplicates": true,
+        "timeOut" : 10000
+      }
 
-        const autoplay_warning = document.getElementById("autoplay_warning");
-        if(autoplay_warning)
-          autoplay_warning.setAttribute("style", "display: none;")
-    
-      }).catch(function(error: Error) {
-        
-        const autoplay_warning = document.getElementById("autoplay_warning");
-        if(autoplay_warning)
-          autoplay_warning.setAttribute("style", "display: block; color:white; text-align: center;")
-    
-      });
+    toastr.warning("Autoplay was not allowed by the browser, muted video to compensate");
 }
 
 var torrentElement = document.getElementById("torrent_progress");
