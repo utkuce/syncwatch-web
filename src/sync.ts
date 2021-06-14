@@ -20,6 +20,12 @@ var lastEvent : any;
 export function sendVideoState(paused: boolean, position: number) {
 
     var event = { "videoState": { "position": String(position), "paused": paused }} 
+
+    if (!paused)
+    {
+        console.log("playing video");
+        document.getElementById("my-player")?.setAttribute("data-is-playing", "true");
+    }
   
     // filter duplicate events coming from the video player
     if (!isEqual(event, lastEvent)) {
