@@ -28,7 +28,7 @@ export function create(uid: string) {
 
     roomId = uniqid('room-');
     var roomRef = firebase.database().ref(roomId);
-    roomRef.child("created").set(Date.now(),
+    roomRef.child("created").set(new Date(Date.now()).toUTCString(),
 
         function(error: Error | null){
 
