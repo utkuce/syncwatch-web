@@ -20,7 +20,7 @@ firebase.auth().onAuthStateChanged(function(user) {
 
         // Then join the room if the link has the room number
         if (parsedHash.r) {
-            room.join('room-' + parsedHash.r, user.uid);
+            room.join(parsedHash.r.toString(), user.uid);
         } else { // or create a room
             room.create(user.uid);
         }

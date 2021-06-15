@@ -6,7 +6,7 @@ Works with direct urls to video files with codecs supported by browsers or youtu
 https://syncwatch.live
 
 ### Instructions
-Copy the link in the address bar including the room number to someone so they can join the room. There are 3 possible video source methods that can be used:
+Copy the link in the address bar including the room number to someone so they can join the room. There are 2 possible video source methods that can be used:
 #### YouTube
 Enter a youtube url into the input bar, and press enter or click the stream button.
 #### Direct links to video files
@@ -20,15 +20,18 @@ Note that a webpage which has a video on it isn't necessarily the link to that v
 Drag-and-drop a video file encoded with a supported format by the browser and it will be shared via 
 [webtorrent](https://webtorrent.io/) to everyone in the room.
 -->
-## Build
+## Setup
 
-```bash
-npm install
-npm run build
-```
+- Create a [Realtime Database](https://firebase.google.com/docs/database) project on Google's Firebase
+- Go to [Firebase Console](https://console.firebase.google.com) and get the credentials under project settings
+- Fill the `firebaseConfig` variable in `src/room.ts` with the credentials
 
-## Run
+## Development
 
-```
-npm run serve
-```
+- Use `npm run serve` for local testing
+
+## Deploy
+
+- `npm install` and `npm run build` will create the `dist/` folder
+- Upload the `dist/` folder to a static host
+
