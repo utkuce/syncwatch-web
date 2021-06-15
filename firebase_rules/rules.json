@@ -2,9 +2,9 @@
   "rules": {
     "$room_id": {
       ".read": "data.child('users').hasChild(auth.uid)",
-      "created": {
-        ".validate": "newData.isNumber()",
-        ".write": "auth.uid !== null"
+      "lastLeaverTime": {
+        ".validate": "newData.isString()",
+        ".write": "root.child($room_id).child('users').hasChild(auth.uid)"
       },
       "users": {
         "$user_id": {
