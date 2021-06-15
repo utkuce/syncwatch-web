@@ -26,22 +26,20 @@ export var roomId: string;
 
 export function create(uid: string) {
 
-    roomId = uniqid('room-');
-    var roomRef = firebase.database().ref(roomId);
-    roomRef.child("created").set(new Date(Date.now()).toUTCString(),
+    firebase.database().ref().push()
+        .then((roomRef: firebase.database.Reference) => {
 
-        function(error: Error | null){
-
-            if (error) {
-                console.error(error);
-                return;
-            }
-            
+        if (roomRef.key != null)
+        {
+            roomId = encodeURIComponent(roomRef.key);
             console.log('Room created on firebase database');
-            console.log("Joining " + roomId);
+            console.log("Joining room " + roomId);
             join(roomId, uid);
         }
-    );
+        
+    }, (reason: any) => {
+        console.log("Could not create room, " + reason);
+    });
 }
 
 export var myUserId: string;
@@ -50,12 +48,10 @@ export function join(rid: string, uid: string) {
     roomId = rid;
     var userName = "Guest";
 
-    if (localStorage['username']) {
-        console.log("Username is set to: " + localStorage['username'])
+    if (localStorage['username'])
         userName = localStorage['username'];
-    } else {
-        localStorage['username'] = userName;
-    }     
+    
+    console.log("Username is set to: " + userName)
 
     myUserId = uid;
 
