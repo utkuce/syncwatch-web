@@ -106,6 +106,7 @@ export function setSource(sourceURL: string) {
     webtorrent.handleTorrent(sourceURL);
   } else {
     player.src({type: 'video/' + provider_, src: src_});
+    console.log("Video source is set to: " + sourceURL);
   }
 
   ui.setVideoSourceDisplay(src_, provider_);

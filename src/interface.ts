@@ -45,12 +45,11 @@ dragDrop('body', function (files: any) {
 
 export function setRoomNumber(roomId: string) {
 
-    const roomNumber: string = roomId.split('-')[1];
-    window.location.hash = "r=" + roomNumber;
+    window.location.hash = "r=" + roomId;
 
     const roomNumberElement = document.getElementById('roomNumber');
     if (roomNumberElement) {
-        roomNumberElement.innerHTML = 'Joined room ' + roomNumber;
+        roomNumberElement.innerHTML = 'Joined room ';// + roomId;
         roomNumberElement.style.color = "white";
     }        
 }
