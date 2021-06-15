@@ -33,7 +33,7 @@
     "end-of-stream": "^1.4.1",
     "firebase": "^7.15.1",
     "get-video-id": "^3.1.4",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "plyr": "^3.6.2",
     "query-string": "^6.13.1",
     "toastr": "^2.1.4",
