@@ -89,6 +89,10 @@ function onUserLeave(roomRef: any) {
             }
         }
     ); 
+
+    roomRef.child("lastLeaverTime").onDisconnect().set(
+        firebase.database.ServerValue.TIMESTAMP
+    ); 
 }
 
 function connectedCheck(roomRef: any, userName: string) {
@@ -107,16 +111,6 @@ function connectedCheck(roomRef: any, userName: string) {
 
             addUser(roomRef, userName);
         }
-    });
-}
-
-export function lastInRoom(last: boolean) {
-
-    // cleanup the room before leaving if you're the last person
-    var roomRef = firebase.database().ref(roomId);
-    ["created", "videoState", "videoSource"].forEach(function(node: any){
-        var onDisc =  roomRef.child(node).onDisconnect();
-        last ? onDisc.remove() : onDisc.cancel();
     });
 }
 
